@@ -1,4 +1,4 @@
-package com.example.crawllet
+package dev.ali.crawllet
 
 import io.flutter.embedding.android.FlutterActivity
 
