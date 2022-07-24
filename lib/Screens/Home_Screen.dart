@@ -12,8 +12,16 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
-    return Container(
+    Size size = MediaQuery.of(context).size;
 
-     );
+    return Scaffold(
+      body: SizedBox(
+        width: size.width,
+        height: size.height,
+        child: const Center(
+          child: Text("Hello it's Home Screen"),
+        ),
+      ),
+    );
   }
 }
