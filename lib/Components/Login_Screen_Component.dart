@@ -5,7 +5,8 @@ import 'package:flutter/material.dart';
 
 class LoginScreenComponent extends StatefulWidget {
   final Widget mainwidget;
-  const LoginScreenComponent({Key? key, required this.mainwidget}) : super(key: key);
+  const LoginScreenComponent({Key? key, required this.mainwidget})
+      : super(key: key);
 
   @override
   State<LoginScreenComponent> createState() => _LoginScreenComponentState();
@@ -26,7 +27,7 @@ class _LoginScreenComponentState extends State<LoginScreenComponent> {
             painter: RPSCustomPainter(),
           ),
           Padding(
-              padding: EdgeInsets.only(top: data.viewPadding.top + 8.0),
+              padding: EdgeInsets.only(top: data.viewPadding.top),
               child: widget.mainwidget)
         ]),
       ),

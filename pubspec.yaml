@@ -22,7 +22,7 @@ dependencies:
   flutter_color: ^2.0.0
   animated_text_kit: ^4.2.2
   ftoast: ^2.0.0
-  icon_forest: ^1.1.8
+  font_awesome_flutter: ^10.1.0
 
 dev_dependencies:
   flutter_test:

@@ -1,10 +1,10 @@
 // ignore_for_file: file_names
 
 class Spacing {
-  static int sm = 10;
-  static int md = 20;
-  static int lg = 30;
-  static int xl = 60;
-  static int xxl = 80;
-  static int xxxl = 100;
+  static double sm = 10.0;
+  static double md = 20.0;
+  static double lg = 30.0;
+  static double xl = 60.0;
+  static double xxl = 80.0;
+  static double xxxl = 100.0;
 }
