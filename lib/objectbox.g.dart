@@ -14,28 +14,48 @@ import 'package:objectbox/objectbox.dart';
 import 'package:objectbox_flutter_libs/objectbox_flutter_libs.dart';
 
 import 'models/ObjectBoxUser.dart';
+import 'models/isUserStarted.dart';
 
 export 'package:objectbox/objectbox.dart'; // so that callers only have to import this file
 
 final _entities = <ModelEntity>[
   ModelEntity(
-      id: const IdUid(1, 5072210801650728446),
-      name: 'ObjectBoxUser',
-      lastPropertyId: const IdUid(3, 9195237492750528133),
+      id: const IdUid(1, 7349951884595302596),
+      name: 'IsUserStarted',
+      lastPropertyId: const IdUid(2, 4140311186829861217),
       flags: 0,
       properties: <ModelProperty>[
         ModelProperty(
-            id: const IdUid(1, 8867021457469786763),
+            id: const IdUid(1, 1848308388500462036),
             name: 'id',
             type: 6,
             flags: 1),
         ModelProperty(
-            id: const IdUid(2, 5991259984473948277),
+            id: const IdUid(2, 4140311186829861217),
+            name: 'userStarted',
+            type: 1,
+            flags: 0)
+      ],
+      relations: <ModelRelation>[],
+      backlinks: <ModelBacklink>[]),
+  ModelEntity(
+      id: const IdUid(2, 7027467188496181889),
+      name: 'ObjectBoxUser',
+      lastPropertyId: const IdUid(3, 6823442668208141290),
+      flags: 0,
+      properties: <ModelProperty>[
+        ModelProperty(
+            id: const IdUid(1, 3969008388668599494),
+            name: 'id',
+            type: 6,
+            flags: 1),
+        ModelProperty(
+            id: const IdUid(2, 8334218281662117653),
             name: 'userEmail',
             type: 9,
             flags: 0),
         ModelProperty(
-            id: const IdUid(3, 9195237492750528133),
+            id: const IdUid(3, 6823442668208141290),
             name: 'userPassword',
             type: 9,
             flags: 0)
@@ -64,7 +84,7 @@ Future<Store> openStore(
 ModelDefinition getObjectBoxModel() {
   final model = ModelInfo(
       entities: _entities,
-      lastEntityId: const IdUid(1, 5072210801650728446),
+      lastEntityId: const IdUid(2, 7027467188496181889),
       lastIndexId: const IdUid(0, 0),
       lastRelationId: const IdUid(0, 0),
       lastSequenceId: const IdUid(0, 0),
@@ -77,8 +97,34 @@ ModelDefinition getObjectBoxModel() {
       version: 1);
 
   final bindings = <Type, EntityDefinition>{
-    ObjectBoxUser: EntityDefinition<ObjectBoxUser>(
+    IsUserStarted: EntityDefinition<IsUserStarted>(
         model: _entities[0],
+        toOneRelations: (IsUserStarted object) => [],
+        toManyRelations: (IsUserStarted object) => {},
+        getId: (IsUserStarted object) => object.id,
+        setId: (IsUserStarted object, int id) {
+          object.id = id;
+        },
+        objectToFB: (IsUserStarted object, fb.Builder fbb) {
+          fbb.startTable(3);
+          fbb.addInt64(0, object.id);
+          fbb.addBool(1, object.userStarted);
+          fbb.finish(fbb.endTable());
+          return object.id;
+        },
+        objectFromFB: (Store store, ByteData fbData) {
+          final buffer = fb.BufferContext(fbData);
+          final rootOffset = buffer.derefObject(0);
+
+          final object = IsUserStarted(
+              userStarted:
+                  const fb.BoolReader().vTableGet(buffer, rootOffset, 6, false))
+            ..id = const fb.Int64Reader().vTableGet(buffer, rootOffset, 4, 0);
+
+          return object;
+        }),
+    ObjectBoxUser: EntityDefinition<ObjectBoxUser>(
+        model: _entities[1],
         toOneRelations: (ObjectBoxUser object) => [],
         toManyRelations: (ObjectBoxUser object) => {},
         getId: (ObjectBoxUser object) => object.id,
@@ -113,17 +159,28 @@ ModelDefinition getObjectBoxModel() {
   return ModelDefinition(model, bindings);
 }
 
+/// [IsUserStarted] entity fields to define ObjectBox queries.
+class IsUserStarted_ {
+  /// see [IsUserStarted.id]
+  static final id =
+      QueryIntegerProperty<IsUserStarted>(_entities[0].properties[0]);
+
+  /// see [IsUserStarted.userStarted]
+  static final userStarted =
+      QueryBooleanProperty<IsUserStarted>(_entities[0].properties[1]);
+}
+
 /// [ObjectBoxUser] entity fields to define ObjectBox queries.
 class ObjectBoxUser_ {
   /// see [ObjectBoxUser.id]
   static final id =
-      QueryIntegerProperty<ObjectBoxUser>(_entities[0].properties[0]);
+      QueryIntegerProperty<ObjectBoxUser>(_entities[1].properties[0]);
 
   /// see [ObjectBoxUser.userEmail]
   static final userEmail =
-      QueryStringProperty<ObjectBoxUser>(_entities[0].properties[1]);
+      QueryStringProperty<ObjectBoxUser>(_entities[1].properties[1]);
 
   /// see [ObjectBoxUser.userPassword]
   static final userPassword =
-      QueryStringProperty<ObjectBoxUser>(_entities[0].properties[2]);
+      QueryStringProperty<ObjectBoxUser>(_entities[1].properties[2]);
 }

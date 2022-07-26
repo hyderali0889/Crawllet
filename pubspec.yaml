@@ -19,10 +19,10 @@ dependencies:
   cloud_firestore: any
   firebase_auth:
   firebase_core:
-  wave: ^0.2.2
   flutter_color: ^2.0.0
-  flutter_svg: ^1.1.1+1
   animated_text_kit: ^4.2.2
+  ftoast: ^2.0.0
+  icon_forest: ^1.1.8
 
 dev_dependencies:
   flutter_test:
@@ -45,21 +45,21 @@ flutter_native_splash:
   image: assets/icons/main.png
   android12: true
 
-assets:
-  - assets/icons/
-
-fonts:
-  - family: myanamarText
-    fonts:
-      - asset: assets/fonts/myanamarText.ttf
-      - asset: assets/fonts/myanamarTextBold.ttf
-        style: bold
-  - family: rockwell
-    fonts:
-      - asset: assets/fonts/rockwellRegular.ttf
-  - family: harlow
-    fonts:
-      - asset: assets/fonts/harlowSolidRegular.ttf
-
 flutter:
   uses-material-design: true
+
+  assets:
+    - assets/icons/
+
+  fonts:
+    - family: myanamarText
+      fonts:
+        - asset: assets/fonts/myanamarText.ttf
+        - asset: assets/fonts/myanamarTextBold.ttf
+          weight: 900
+    - family: rockwell
+      fonts:
+        - asset: assets/fonts/rockwellRegular.ttf
+    - family: harlow
+      fonts:
+        - asset: assets/fonts/harlowSolidRegular.ttf
