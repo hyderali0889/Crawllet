@@ -1,12 +1,13 @@
 // ignore_for_file: file_names
 
 import 'package:crawllet/Components/Login_Screen_Component.dart';
-import 'package:crawllet/Screens/Forgot_Password.dart';
+import 'package:crawllet/Routes/App_Routes.dart';
+import 'package:crawllet/Screens/Forgot_Password_Screen.dart';
 import 'package:crawllet/Screens/Signup_Screen.dart';
 import 'package:crawllet/utils/Firebase_Functions.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:ftoast/ftoast.dart';
+import 'package:get/get.dart';
 import '../Theme/FontSizes.dart';
 import '../Theme/MainColors.dart';
 import '../Theme/Spacing.dart';
@@ -137,26 +138,36 @@ Widget loginScreenWidget(context) {
                           enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(14.0),
                               borderSide: BorderSide(
-                                  color: MainColors.foregroundColor)),
+                                  width: 1, color: MainColors.foregroundColor)),
                           focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(14.0),
                               borderSide: BorderSide(
+                                  width: 1,
                                   color: MainColors.foregroundColor))),
                     ),
                     Padding(
                       padding: EdgeInsets.only(top: Spacing.md),
                       child: Center(
                         child: TextButton(
-                            onPressed: () {
-                              if (emailController.text.isNotEmpty &&
-                                  passwordController.text.isNotEmpty &&
-                                  passwordController.text.length > 6) {
-                                FirebaseFunctions().login(
+                            onPressed: () async {
+                              try {
+                                if (emailController.text.isNotEmpty &&
+                                    passwordController.text.isNotEmpty &&
+                                    passwordController.text.length > 6) {
+                                  await FirebaseFunctions().login(
                                     emailController.text.trim(),
                                     passwordController.text.trim(),
-                                    context);
-                              } else {
-                                FToast.toast(context, msg: "Empty fields" , subMsg: "Fields are empty or password is less then 6 letters");
+                                  );
+                                  Get.offAllNamed(AppRoutes.homeScreen);
+                                } else {
+                                  Get.snackbar("Empty fields",
+                                      "Fields are empty or password is less then 6 letters",
+                                      snackPosition: SnackPosition.BOTTOM);
+                                }
+                              } catch (e) {
+                                Get.snackbar("An Error Occurred",
+                                    "Please Check You Connection and try again",
+                                    snackPosition: SnackPosition.BOTTOM);
                               }
                             },
                             child: Container(
@@ -207,15 +218,11 @@ Widget loginScreenWidget(context) {
                     TextButton(
                         style: TextButton.styleFrom(
                             padding: EdgeInsets.zero,
-                            minimumSize: Size(60, 20),
+                            minimumSize: const Size(60, 20),
                             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                             alignment: Alignment.centerLeft),
                         onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      const ForgotPassword()));
+                          Get.toNamed(AppRoutes.forgotPasswordScreen);
                         },
                         child: Text(
                           "Reset Password",
@@ -242,11 +249,7 @@ Widget loginScreenWidget(context) {
                                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                 alignment: Alignment.centerLeft),
                             onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          const SignupScreen()));
+                              Get.toNamed(AppRoutes.signupScreen);
                             },
                             child: Text(
                               " Register",

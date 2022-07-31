@@ -1,13 +1,14 @@
 // ignore_for_file: file_names
 
+import 'package:crawllet/Routes/App_Routes.dart';
 import 'package:crawllet/Theme/FontSizes.dart';
 import 'package:crawllet/Theme/MainColors.dart';
 import 'package:crawllet/main.dart';
 import 'package:crawllet/models/isUserStarted.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../objectbox.g.dart';
-import 'Login_Screen.dart';
 
 class GetStartedScreen extends StatefulWidget {
   const GetStartedScreen({Key? key}) : super(key: key);
@@ -78,10 +79,8 @@ class _GetStartedScreenState extends State<GetStartedScreen> {
                       onPressed: () {
                         IsUserStarted model = IsUserStarted(userStarted: true);
                         isUserStarted.put(model);
-                        Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: ((context) => const LoginScreen())));
+
+                        Get.offAllNamed(AppRoutes.loginScreen);
                       },
                       child: Container(
                           width: size.width * 0.8,

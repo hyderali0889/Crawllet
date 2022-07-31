@@ -1,12 +1,13 @@
 // ignore_for_file: file_names
 
+import 'package:crawllet/Routes/App_Routes.dart';
 import 'package:crawllet/Screens/GetStartedScreen.dart';
 import 'package:crawllet/Theme/FontSizes.dart';
 import 'package:crawllet/Theme/MainColors.dart';
 import 'package:crawllet/objectbox.g.dart';
 import 'package:flutter/material.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
-import 'package:ftoast/ftoast.dart';
+import 'package:get/get.dart';
 import '../main.dart';
 import '../models/isUserStarted.dart';
 import 'Login_Screen.dart';
@@ -32,21 +33,17 @@ class _SplashScreenState extends State<SplashScreen> {
       var userStarted = isUserStarted.get(1)?.userStarted ?? false;
       if (userStarted == true) {
         Future.delayed(const Duration(milliseconds: 2500), () {
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => const LoginScreen()));
+          Get.offAll(() => const LoginScreen());
         });
       } else {
         Future.delayed(const Duration(milliseconds: 2500), () {
-          Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => const GetStartedScreen()));
+          Get.offAll(() => const GetStartedScreen());
         });
       }
     } catch (e) {
-      FToast.toast(context, msg: "An Error Occurred", subMsg: "$e");
-      Navigator.pushReplacement(context,
-          MaterialPageRoute(builder: (context) => const GetStartedScreen()));
+      Get.snackbar("An Error Occurred", "$e");
+
+      Get.offAllNamed(AppRoutes.loginScreen);
     }
   }
 

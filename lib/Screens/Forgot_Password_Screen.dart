@@ -1,29 +1,33 @@
 // ignore_for_file: file_names
 
 import 'package:crawllet/Components/Login_Screen_Component.dart';
+import 'package:crawllet/Routes/App_Routes.dart';
 import 'package:crawllet/Screens/Login_Screen.dart';
 import 'package:crawllet/utils/Firebase_Functions.dart';
 import 'package:flutter/material.dart';
-import 'package:ftoast/ftoast.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
 import '../Theme/FontSizes.dart';
 import '../Theme/MainColors.dart';
 import '../Theme/Spacing.dart';
 
-class ForgotPassword extends StatefulWidget {
-  const ForgotPassword({Key? key}) : super(key: key);
+class ForgotPasswordScreen extends StatefulWidget {
+  const ForgotPasswordScreen({Key? key}) : super(key: key);
 
   @override
-  State<ForgotPassword> createState() => _ForgotPasswordState();
+  State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
 }
 
-class _ForgotPasswordState extends State<ForgotPassword> {
+class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return LoginScreenComponent(mainwidget: signUpScreenWidget(context));
   }
 }
 
-Widget signUpScreenWidget(context) {
+Widget signUpScreenWidget(
+  context,
+) {
   Size size = MediaQuery.of(context).size;
   TextEditingController emailController = TextEditingController();
   return Column(
@@ -34,12 +38,27 @@ Widget signUpScreenWidget(context) {
         child: Column(
           children: [
             Center(
-              child: Text(
-                "Wallet App",
-                style: TextStyle(
-                    fontFamily: "harlow",
-                    fontSize: FontSizes.lg,
-                    color: MainColors.textColor),
+              child: Row(
+                children: [
+                  IconButton(
+                      onPressed: () {
+                        Get.back();
+                      },
+                      icon: Icon(FontAwesomeIcons.arrowLeft,
+                          color: MainColors.textColor)),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        "Wallet App",
+                        style: TextStyle(
+                            fontFamily: "harlow",
+                            fontSize: FontSizes.lg,
+                            color: MainColors.textColor),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             Padding(
@@ -99,22 +118,32 @@ Widget signUpScreenWidget(context) {
                           enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(14.0),
                               borderSide: BorderSide(
-                                  color: MainColors.foregroundColor)),
+                                  width: 1, color: MainColors.foregroundColor)),
                           focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(14.0),
                               borderSide: BorderSide(
+                                  width: 1,
                                   color: MainColors.foregroundColor))),
                     ),
                     Padding(
                       padding: EdgeInsets.only(top: Spacing.md),
                       child: Center(
                         child: TextButton(
-                            onPressed: () {
-                              if (emailController.text.isNotEmpty) {
-                                FirebaseFunctions().forgotPassword(
-                                    emailController.text.trim(), context);
-                              } else {
-                                FToast.toast(context, msg: "Empty Field");
+                            onPressed: () async {
+                              try {
+                                if (emailController.text.isNotEmpty) {
+                                  await FirebaseFunctions().forgotPassword(
+                                      emailController.text.trim());
+                                  Get.offNamed(AppRoutes.loginScreen);
+                                } else {
+                                  Get.snackbar(
+                                      "Error Ocurred", " Empty Fields ",
+                                      snackPosition: SnackPosition.BOTTOM);
+                                }
+                              } catch (e) {
+                                Get.snackbar("Error Ocurred",
+                                    "Please Check Your Connection ",
+                                    snackPosition: SnackPosition.BOTTOM);
                               }
                             },
                             child: Container(

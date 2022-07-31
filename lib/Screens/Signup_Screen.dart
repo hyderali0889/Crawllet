@@ -1,11 +1,13 @@
 // ignore_for_file: file_names
 
 import 'package:crawllet/Components/Login_Screen_Component.dart';
+import 'package:crawllet/Routes/App_Routes.dart';
+import 'package:crawllet/Screens/Home_Screen.dart';
 import 'package:crawllet/Screens/Login_Screen.dart';
 import 'package:crawllet/utils/Firebase_Functions.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:ftoast/ftoast.dart';
+import 'package:get/get.dart';
 import '../Theme/FontSizes.dart';
 import '../Theme/MainColors.dart';
 import '../Theme/Spacing.dart';
@@ -29,6 +31,7 @@ Widget signUpScreenWidget(context) {
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+
   return Column(
     children: [
       SizedBox(
@@ -37,12 +40,27 @@ Widget signUpScreenWidget(context) {
         child: Column(
           children: [
             Center(
-              child: Text(
-                "Wallet App",
-                style: TextStyle(
-                    fontFamily: "harlow",
-                    fontSize: FontSizes.lg,
-                    color: MainColors.textColor),
+              child: Row(
+                children: [
+                  IconButton(
+                      onPressed: () {
+                        Get.back();
+                      },
+                      icon: Icon(FontAwesomeIcons.arrowLeft,
+                          color: MainColors.textColor)),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        "Wallet App",
+                        style: TextStyle(
+                            fontFamily: "harlow",
+                            fontSize: FontSizes.lg,
+                            color: MainColors.textColor),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             Padding(
@@ -120,6 +138,14 @@ Widget signUpScreenWidget(context) {
                     ),
                     TextField(
                       controller: emailController,
+                      onChanged: (e) {
+                        bool emailValid = RegExp(
+                                r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                            .hasMatch(e);
+                        if (emailValid == true) {
+                          // add get
+                        }
+                      },
                       style: TextStyle(
                           fontFamily: "rockwell",
                           fontSize: FontSizes.md,
@@ -136,10 +162,11 @@ Widget signUpScreenWidget(context) {
                           enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(14.0),
                               borderSide: BorderSide(
-                                  color: MainColors.foregroundColor)),
+                                  width: 1, color: MainColors.foregroundColor)),
                           focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(14.0),
                               borderSide: BorderSide(
+                                  width: 1,
                                   color: MainColors.foregroundColor))),
                     ),
                     Padding(
@@ -182,18 +209,27 @@ Widget signUpScreenWidget(context) {
                       padding: EdgeInsets.only(top: Spacing.md),
                       child: Center(
                         child: TextButton(
-                            onPressed: () {
-                              if (nameController.text.isNotEmpty &&
-                                  emailController.text.isNotEmpty &&
-                                  passwordController.text.isNotEmpty &&
-                                  passwordController.text.length > 6) {
-                                FirebaseFunctions().signup(
+                            onPressed: () async {
+                              try {
+                                if (nameController.text.isNotEmpty &&
+                                    emailController.text.isNotEmpty &&
+                                    passwordController.text.isNotEmpty &&
+                                    passwordController.text.length > 6) {
+                                  await FirebaseFunctions().signup(
                                     nameController.text.trim(),
                                     emailController.text.trim(),
                                     passwordController.text.trim(),
-                                    context);
-                              } else {
-                                FToast.toast(context, msg: "Empty Fields", subMsg: "Empty Fields or Passwod is less then 6 letters");
+                                  );
+                                  Get.offAllNamed(AppRoutes.homeScreen);
+                                } else {
+                                  Get.snackbar("Empty Fields",
+                                      "Empty Fields or Passwod is less then 6 letters" ,
+                                      snackPosition: SnackPosition.BOTTOM);
+                                }
+                              } catch (e) {
+                                Get.snackbar("An Error Occurred",
+                                    "Please Check You Connection and try again" ,
+                                    snackPosition: SnackPosition.BOTTOM);
                               }
                             },
                             child: Container(
@@ -238,10 +274,7 @@ Widget signUpScreenWidget(context) {
                             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                             alignment: Alignment.centerLeft),
                         onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const LoginScreen()));
+                          Get.toNamed(AppRoutes.loginScreen);
                         },
                         child: Text(
                           "Log In",

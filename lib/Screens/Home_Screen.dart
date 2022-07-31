@@ -22,7 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Center(
           child: TextButton(
               onPressed: () {
-                FirebaseFunctions().signout(context);
+                FirebaseFunctions().signout();
               },
               child: Text("Hello it's Home Screen")),
         ),
