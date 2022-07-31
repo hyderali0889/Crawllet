@@ -1,9 +1,12 @@
 // ignore_for_file: file_names
 
 import 'package:crawllet/Components/Login_Screen_Component.dart';
+import 'package:crawllet/Screens/Forgot_Password.dart';
 import 'package:crawllet/Screens/Signup_Screen.dart';
+import 'package:crawllet/utils/Firebase_Functions.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:ftoast/ftoast.dart';
 import '../Theme/FontSizes.dart';
 import '../Theme/MainColors.dart';
 import '../Theme/Spacing.dart';
@@ -23,6 +26,8 @@ class _LoginScreenState extends State<LoginScreen> {
 }
 
 Widget loginScreenWidget(context) {
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
   Size size = MediaQuery.of(context).size;
   return Column(
     children: [
@@ -79,6 +84,7 @@ Widget loginScreenWidget(context) {
                       ),
                     ),
                     TextField(
+                      controller: emailController,
                       style: TextStyle(
                           fontFamily: "rockwell",
                           fontSize: FontSizes.md,
@@ -113,6 +119,8 @@ Widget loginScreenWidget(context) {
                       ),
                     ),
                     TextField(
+                      obscureText: true,
+                      controller: passwordController,
                       style: TextStyle(
                           fontFamily: "rockwell",
                           fontSize: FontSizes.sm,
@@ -139,7 +147,18 @@ Widget loginScreenWidget(context) {
                       padding: EdgeInsets.only(top: Spacing.md),
                       child: Center(
                         child: TextButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              if (emailController.text.isNotEmpty &&
+                                  passwordController.text.isNotEmpty &&
+                                  passwordController.text.length > 6) {
+                                FirebaseFunctions().login(
+                                    emailController.text.trim(),
+                                    passwordController.text.trim(),
+                                    context);
+                              } else {
+                                FToast.toast(context, msg: "Empty fields" , subMsg: "Fields are empty or password is less then 6 letters");
+                              }
+                            },
                             child: Container(
                                 width: size.width * 0.7,
                                 height: 50,
@@ -183,17 +202,8 @@ Widget loginScreenWidget(context) {
 
               Padding(
                 padding: const EdgeInsets.only(bottom: 20.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.end,
+                child: Column(
                   children: [
-                    Text(
-                      "Not yet Signed Up ?",
-                      style: TextStyle(
-                          fontFamily: "harlow",
-                          fontSize: FontSizes.md,
-                          color: MainColors.foregroundColor),
-                    ),
                     TextButton(
                         style: TextButton.styleFrom(
                             padding: EdgeInsets.zero,
@@ -204,15 +214,49 @@ Widget loginScreenWidget(context) {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => const SignupScreen()));
+                                  builder: (context) =>
+                                      const ForgotPassword()));
                         },
                         child: Text(
-                          " Register",
+                          "Reset Password",
                           style: TextStyle(
                               fontFamily: "harlow",
                               fontSize: FontSizes.md,
                               color: MainColors.headingColor),
                         )),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          "Not yet Signed Up ?",
+                          style: TextStyle(
+                              fontFamily: "harlow",
+                              fontSize: FontSizes.md,
+                              color: MainColors.foregroundColor),
+                        ),
+                        TextButton(
+                            style: TextButton.styleFrom(
+                                padding: EdgeInsets.zero,
+                                minimumSize: Size(60, 20),
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                alignment: Alignment.centerLeft),
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const SignupScreen()));
+                            },
+                            child: Text(
+                              " Register",
+                              style: TextStyle(
+                                  fontFamily: "harlow",
+                                  fontSize: FontSizes.md,
+                                  color: MainColors.headingColor),
+                            )),
+                      ],
+                    ),
                   ],
                 ),
               ),

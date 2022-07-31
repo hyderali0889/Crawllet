@@ -2,8 +2,10 @@
 
 import 'package:crawllet/Components/Login_Screen_Component.dart';
 import 'package:crawllet/Screens/Login_Screen.dart';
+import 'package:crawllet/utils/Firebase_Functions.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:ftoast/ftoast.dart';
 import '../Theme/FontSizes.dart';
 import '../Theme/MainColors.dart';
 import '../Theme/Spacing.dart';
@@ -24,6 +26,9 @@ class _SignupScreenState extends State<SignupScreen> {
 
 Widget signUpScreenWidget(context) {
   Size size = MediaQuery.of(context).size;
+  TextEditingController nameController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
   return Column(
     children: [
       SizedBox(
@@ -79,6 +84,7 @@ Widget signUpScreenWidget(context) {
                       ),
                     ),
                     TextField(
+                      controller: nameController,
                       style: TextStyle(
                           fontFamily: "rockwell",
                           fontSize: FontSizes.md,
@@ -113,6 +119,7 @@ Widget signUpScreenWidget(context) {
                       ),
                     ),
                     TextField(
+                      controller: emailController,
                       style: TextStyle(
                           fontFamily: "rockwell",
                           fontSize: FontSizes.md,
@@ -147,6 +154,7 @@ Widget signUpScreenWidget(context) {
                       ),
                     ),
                     TextField(
+                      controller: passwordController,
                       obscureText: true,
                       style: TextStyle(
                           fontFamily: "rockwell",
@@ -174,7 +182,20 @@ Widget signUpScreenWidget(context) {
                       padding: EdgeInsets.only(top: Spacing.md),
                       child: Center(
                         child: TextButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              if (nameController.text.isNotEmpty &&
+                                  emailController.text.isNotEmpty &&
+                                  passwordController.text.isNotEmpty &&
+                                  passwordController.text.length > 6) {
+                                FirebaseFunctions().signup(
+                                    nameController.text.trim(),
+                                    emailController.text.trim(),
+                                    passwordController.text.trim(),
+                                    context);
+                              } else {
+                                FToast.toast(context, msg: "Empty Fields", subMsg: "Empty Fields or Passwod is less then 6 letters");
+                              }
+                            },
                             child: Container(
                                 width: size.width * 0.7,
                                 height: 50,
