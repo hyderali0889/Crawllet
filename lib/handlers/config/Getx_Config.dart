@@ -14,5 +14,4 @@ class GetxConfig implements Bindings {
     Get.lazyPut<LoginScreenController>(() => LoginScreenController());
     Get.lazyPut<ForgotScreenController>(() => ForgotScreenController());
   }
-
 }
