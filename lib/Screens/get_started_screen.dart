@@ -1,14 +1,11 @@
 // ignore_for_file: file_names
 
-import 'package:crawllet/Routes/App_Routes.dart';
-import 'package:crawllet/Theme/FontSizes.dart';
-import 'package:crawllet/Theme/MainColors.dart';
-import 'package:crawllet/main.dart';
-import 'package:crawllet/models/isUserStarted.dart';
+import 'package:crawllet/Routes/app_routes.dart';
+import 'package:crawllet/Theme/font_sizes.dart';
+import 'package:crawllet/Theme/main_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../objectbox.g.dart';
 
 class GetStartedScreen extends StatefulWidget {
   const GetStartedScreen({Key? key}) : super(key: key);
@@ -21,7 +18,6 @@ class _GetStartedScreenState extends State<GetStartedScreen> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    Box<IsUserStarted> isUserStarted = objectBox.store.box<IsUserStarted>();
 
     return Scaffold(
       backgroundColor: MainColors.backgroundColors,
@@ -77,10 +73,7 @@ class _GetStartedScreenState extends State<GetStartedScreen> {
                     padding: const EdgeInsets.only(top: 30.0),
                     child: TextButton(
                       onPressed: () {
-                        IsUserStarted model = IsUserStarted(userStarted: true);
-                        isUserStarted.put(model);
-
-                        Get.offAllNamed(AppRoutes.loginScreen);
+                        Get.toNamed(AppRoutes.loginScreen  );
                       },
                       child: Container(
                           width: size.width * 0.8,
@@ -125,9 +118,9 @@ class _GetStartedScreenState extends State<GetStartedScreen> {
 class RPSCustomPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    Paint paint_0_fill = Paint()..style = PaintingStyle.fill;
-    paint_0_fill.color = MainColors.backgroundColors;
-    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), paint_0_fill);
+    Paint paintfill = Paint()..style = PaintingStyle.fill;
+    paintfill.color = MainColors.backgroundColors;
+    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), paintfill);
 
     Path path_1 = Path();
     path_1.moveTo(0, 363);
@@ -146,9 +139,9 @@ class RPSCustomPainter extends CustomPainter {
     path_1.lineTo(0, 750);
     path_1.close();
 
-    Paint paint_1_fill = Paint()..style = PaintingStyle.fill;
-    paint_1_fill.color = Colors.white;
-    canvas.drawPath(path_1, paint_1_fill);
+    Paint paintfill1 = Paint()..style = PaintingStyle.fill;
+    paintfill1.color = Colors.white;
+    canvas.drawPath(path_1, paintfill1);
   }
 
   @override

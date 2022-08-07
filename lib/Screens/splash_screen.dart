@@ -1,16 +1,11 @@
 // ignore_for_file: file_names
 
-import 'package:crawllet/Routes/App_Routes.dart';
-import 'package:crawllet/Screens/GetStartedScreen.dart';
-import 'package:crawllet/Theme/FontSizes.dart';
-import 'package:crawllet/Theme/MainColors.dart';
-import 'package:crawllet/objectbox.g.dart';
+import 'package:crawllet/Routes/app_routes.dart';
+import 'package:crawllet/Theme/font_sizes.dart';
+import 'package:crawllet/Theme/main_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:get/get.dart';
-import '../main.dart';
-import '../models/isUserStarted.dart';
-import 'Login_Screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -20,31 +15,14 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  Box<IsUserStarted> isUserStarted = objectBox.store.box<IsUserStarted>();
-
   @override
   void initState() {
     super.initState();
-    getIsUserStarted();
-  }
 
-  getIsUserStarted() {
-    try {
-      var userStarted = isUserStarted.get(1)?.userStarted ?? false;
-      if (userStarted == true) {
-        Future.delayed(const Duration(milliseconds: 2500), () {
-          Get.offAll(() => const LoginScreen());
-        });
-      } else {
-        Future.delayed(const Duration(milliseconds: 2500), () {
-          Get.offAll(() => const GetStartedScreen());
-        });
-      }
-    } catch (e) {
-      Get.snackbar("An Error Occurred", "$e");
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+        Get.offAllNamed(AppRoutes.getStartedScreen);
 
-      Get.offAllNamed(AppRoutes.loginScreen);
-    }
+    });
   }
 
   @override
@@ -66,7 +44,7 @@ class _SplashScreenState extends State<SplashScreen> {
                   Image.asset("assets/icons/main.png", height: 100, width: 100),
             ),
             SizedBox(
-              width: size.width * 0.7,
+              width: size.width * 0.6,
               child: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,

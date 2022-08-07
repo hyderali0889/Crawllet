@@ -1,16 +1,16 @@
 // ignore_for_file: file_names
 
-import 'package:crawllet/Components/Login_Screen_Component.dart';
-import 'package:crawllet/Routes/App_Routes.dart';
-import 'package:crawllet/Screens/Home_Screen.dart';
-import 'package:crawllet/Screens/Login_Screen.dart';
-import 'package:crawllet/utils/Firebase_Functions.dart';
+import 'package:crawllet/Components/login_screen_component.dart';
+import 'package:crawllet/Routes/app_routes.dart';
+import 'package:crawllet/utils/firebase_functions.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
-import '../Theme/FontSizes.dart';
-import '../Theme/MainColors.dart';
-import '../Theme/Spacing.dart';
+import '../Theme/font_sizes.dart';
+import '../Theme/main_colors.dart';
+import '../Theme/spacing.dart';
+import '../Controllers/signup_screen_controller.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({Key? key}) : super(key: key);
@@ -22,6 +22,8 @@ class SignupScreen extends StatefulWidget {
 class _SignupScreenState extends State<SignupScreen> {
   @override
   Widget build(BuildContext context) {
+    Get.lazyPut(() => SignupScreenController());
+
     return LoginScreenComponent(mainwidget: signUpScreenWidget(context));
   }
 }
@@ -208,44 +210,67 @@ Widget signUpScreenWidget(context) {
                     Padding(
                       padding: EdgeInsets.only(top: Spacing.md),
                       child: Center(
-                        child: TextButton(
-                            onPressed: () async {
-                              try {
-                                if (nameController.text.isNotEmpty &&
-                                    emailController.text.isNotEmpty &&
-                                    passwordController.text.isNotEmpty &&
-                                    passwordController.text.length > 6) {
-                                  await FirebaseFunctions().signup(
-                                    nameController.text.trim(),
-                                    emailController.text.trim(),
-                                    passwordController.text.trim(),
-                                  );
-                                  Get.offAllNamed(AppRoutes.homeScreen);
-                                } else {
-                                  Get.snackbar("Empty Fields",
-                                      "Empty Fields or Passwod is less then 6 letters" ,
+                        child: Obx(
+                          () => TextButton(
+                              onPressed: () async {
+                                try {
+                                  if (nameController.text.isNotEmpty &&
+                                      emailController.text.isNotEmpty &&
+                                      passwordController.text.isNotEmpty &&
+                                      passwordController.text.length > 6) {
+                                    Get.find<SignupScreenController>()
+                                        .changeIsLoadingStarted(true);
+
+                                    await FirebaseFunctions().signup(
+                                      nameController.text.trim(),
+                                      emailController.text.trim(),
+                                      passwordController.text.trim(),
+                                    );
+                                    if (FirebaseAuth
+                                        .instance.currentUser!.uid.isNotEmpty) {
+                                      Get.offAllNamed(
+                                          AppRoutes.navigationScreen);
+                                    }
+                                  } else {
+                                    Get.find<SignupScreenController>()
+                                        .changeIsLoadingStarted(false);
+                                    Get.snackbar("Empty Fields ",
+                                        "Empty Fields or Passwod is less then 6 letters",
+                                        snackPosition: SnackPosition.BOTTOM);
+                                  }
+                                } catch (e) {
+                                  Get.find<SignupScreenController>()
+                                      .changeIsLoadingStarted(false);
+                                  Get.snackbar("An Error Occurred $e",
+                                      "Please Check You Connection and try again",
                                       snackPosition: SnackPosition.BOTTOM);
                                 }
-                              } catch (e) {
-                                Get.snackbar("An Error Occurred",
-                                    "Please Check You Connection and try again" ,
-                                    snackPosition: SnackPosition.BOTTOM);
-                              }
-                            },
-                            child: Container(
-                                width: size.width * 0.7,
-                                height: 50,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(14.0),
-                                    color: MainColors.foregroundColor),
-                                child: Center(
-                                    child: Text(
-                                  "Sign Up",
-                                  style: TextStyle(
-                                      fontFamily: "harlow",
-                                      fontSize: FontSizes.md,
-                                      color: MainColors.backgroundColors),
-                                )))),
+                              },
+                              child: Container(
+                                  width: size.width * 0.7,
+                                  height: 50,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(14.0),
+                                      color: Get.find<SignupScreenController>()
+                                              .isLoadingStarted
+                                              .value
+                                          ? MainColors.drawingFillColor
+                                          : MainColors.foregroundColor),
+                                  child: Center(
+                                      child: Get.find<SignupScreenController>()
+                                              .isLoadingStarted
+                                              .value
+                                          ? Image.asset(
+                                              "assets/gifs/loading.gif")
+                                          : Text(
+                                              "Sign Up",
+                                              style: TextStyle(
+                                                  fontFamily: "harlow",
+                                                  fontSize: FontSizes.md,
+                                                  color: MainColors
+                                                      .backgroundColors),
+                                            )))),
+                        ),
                       ),
                     ),
                   ],

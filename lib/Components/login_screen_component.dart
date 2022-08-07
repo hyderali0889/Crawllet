@@ -1,6 +1,6 @@
 // ignore_for_file: file_names
 
-import 'package:crawllet/Theme/MainColors.dart';
+import 'package:crawllet/Theme/main_colors.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreenComponent extends StatefulWidget {
@@ -23,7 +23,7 @@ class _LoginScreenComponentState extends State<LoginScreenComponent> {
         height: data.size.height,
         child: Stack(children: [
           CustomPaint(
-            size: Size(900, 500),
+            size: const Size(900, 500),
             painter: RPSCustomPainter(),
           ),
           Padding(
@@ -39,9 +39,9 @@ class _LoginScreenComponentState extends State<LoginScreenComponent> {
 class RPSCustomPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    Paint paint_0_fill = Paint()..style = PaintingStyle.fill;
-    paint_0_fill.color = MainColors.backgroundColors;
-    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), paint_0_fill);
+    Paint paintfill = Paint()..style = PaintingStyle.fill;
+    paintfill.color = MainColors.backgroundColors;
+    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), paintfill);
 
     Path path_1 = Path();
     path_1.moveTo(0, 225);
@@ -60,9 +60,9 @@ class RPSCustomPainter extends CustomPainter {
     path_1.lineTo(0, 0);
     path_1.close();
 
-    Paint paint_1_fill = Paint()..style = PaintingStyle.fill;
-    paint_1_fill.color = MainColors.foregroundColor;
-    canvas.drawPath(path_1, paint_1_fill);
+    Paint paintfill1 = Paint()..style = PaintingStyle.fill;
+    paintfill1.color = MainColors.foregroundColor;
+    canvas.drawPath(path_1, paintfill1);
   }
 
   @override

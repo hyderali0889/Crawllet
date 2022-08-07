@@ -1,6 +1,6 @@
 // ignore_for_file: file_names
 
-import 'package:crawllet/Theme/MainColors.dart';
+import 'package:crawllet/Theme/main_colors.dart';
 import 'package:flutter/material.dart';
 
 class MainComponent extends StatefulWidget {
@@ -68,9 +68,9 @@ class RPSCustomPainter extends CustomPainter {
     path_0.lineTo(0, 0);
     path_0.close();
 
-    Paint paint_0_fill = Paint()..style = PaintingStyle.fill;
-    paint_0_fill.color = MainColors.backgroundColors;
-    canvas.drawPath(path_0, paint_0_fill);
+    Paint paintfill = Paint()..style = PaintingStyle.fill;
+    paintfill.color = MainColors.backgroundColors;
+    canvas.drawPath(path_0, paintfill);
   }
 
   @override

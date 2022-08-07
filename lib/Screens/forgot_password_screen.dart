@@ -1,15 +1,15 @@
 // ignore_for_file: file_names
 
-import 'package:crawllet/Components/Login_Screen_Component.dart';
-import 'package:crawllet/Routes/App_Routes.dart';
-import 'package:crawllet/Screens/Login_Screen.dart';
-import 'package:crawllet/utils/Firebase_Functions.dart';
+import 'package:crawllet/Components/login_screen_component.dart';
+import 'package:crawllet/Routes/app_routes.dart';
+import 'package:crawllet/utils/firebase_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
-import '../Theme/FontSizes.dart';
-import '../Theme/MainColors.dart';
-import '../Theme/Spacing.dart';
+import '../Theme/font_sizes.dart';
+import '../Theme/main_colors.dart';
+import '../Theme/spacing.dart';
+import '../Controllers/forgot_screen_controller.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({Key? key}) : super(key: key);
@@ -21,6 +21,8 @@ class ForgotPasswordScreen extends StatefulWidget {
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
+    Get.lazyPut( () => ForgotScreenController());
+
     return LoginScreenComponent(mainwidget: signUpScreenWidget(context));
   }
 }
@@ -128,38 +130,55 @@ Widget signUpScreenWidget(
                     Padding(
                       padding: EdgeInsets.only(top: Spacing.md),
                       child: Center(
-                        child: TextButton(
-                            onPressed: () async {
-                              try {
-                                if (emailController.text.isNotEmpty) {
-                                  await FirebaseFunctions().forgotPassword(
-                                      emailController.text.trim());
-                                  Get.offNamed(AppRoutes.loginScreen);
-                                } else {
-                                  Get.snackbar(
-                                      "Error Ocurred", " Empty Fields ",
+                        child: Obx(
+                         () => TextButton(
+                              onPressed: () async {
+                                try {
+                                  if (emailController.text.isNotEmpty) {
+                                    Get.find<ForgotScreenController>()
+                                        .changeIsLoadingStarted(true);
+                                    await FirebaseFunctions().forgotPassword(
+                                        emailController.text.trim());
+                                    Get.offNamed(AppRoutes.loginScreen);
+                                  } else {
+                                     Get.find<ForgotScreenController>()
+                                        .changeIsLoadingStarted(false);
+                                    Get.snackbar(
+                                        "Error Ocurred", " Empty Fields ",
+                                        snackPosition: SnackPosition.BOTTOM);
+                                  }
+                                } catch (e) {
+                                   Get.find<ForgotScreenController>()
+                                        .changeIsLoadingStarted(false);
+                                  Get.snackbar("Error Ocurred",
+                                      "Please Check Your Connection ",
                                       snackPosition: SnackPosition.BOTTOM);
                                 }
-                              } catch (e) {
-                                Get.snackbar("Error Ocurred",
-                                    "Please Check Your Connection ",
-                                    snackPosition: SnackPosition.BOTTOM);
-                              }
-                            },
-                            child: Container(
-                                width: size.width * 0.7,
-                                height: 50,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(14.0),
-                                    color: MainColors.foregroundColor),
-                                child: Center(
-                                    child: Text(
-                                  "Send Link",
-                                  style: TextStyle(
-                                      fontFamily: "harlow",
-                                      fontSize: FontSizes.md,
-                                      color: MainColors.backgroundColors),
-                                )))),
+                              },
+                              child: Container(
+                                  width: size.width * 0.7,
+                                  height: 50,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(14.0),
+                                      color: Get.find<ForgotScreenController>()
+                                              .isLoadingStarted
+                                              .value
+                                          ? MainColors.drawingFillColor
+                                          : MainColors.foregroundColor),
+                                  child: Center(
+                                      child: Get.find<ForgotScreenController>()
+                                              .isLoadingStarted
+                                              .value
+                                          ? Image.asset("assets/gifs/loading.gif")
+                                          : Text(
+                                              "Send Link",
+                                              style: TextStyle(
+                                                  fontFamily: "harlow",
+                                                  fontSize: FontSizes.md,
+                                                  color: MainColors
+                                                      .backgroundColors),
+                                            )))),
+                        ),
                       ),
                     ),
                   ],

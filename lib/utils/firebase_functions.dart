@@ -12,11 +12,10 @@ class FirebaseFunctions {
         .createUserWithEmailAndPassword(email: email, password: password)
         .then((value) {
       value.user?.updateDisplayName(name);
-      firestore.collection("${value.user!.displayName}${value.user!.uid}").add({
+      firestore.collection(value.user!.uid).doc("User_data").set({
         "id": value.user!.uid,
         "name": name,
         "email": value.user!.email,
-        "password": password
       });
     });
   }

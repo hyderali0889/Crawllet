@@ -3,5 +3,10 @@
 import 'package:get/get.dart';
 
 class ForgotScreenController extends GetxController{
-  
+    RxBool isLoadingStarted = false.obs;
+
+  changeIsLoadingStarted(bool val) {
+    isLoadingStarted.value = val;
+  }
+
 }

@@ -1,16 +1,16 @@
 // ignore_for_file: file_names
 
-import 'package:crawllet/Components/Login_Screen_Component.dart';
-import 'package:crawllet/Routes/App_Routes.dart';
-import 'package:crawllet/Screens/Forgot_Password_Screen.dart';
-import 'package:crawllet/Screens/Signup_Screen.dart';
-import 'package:crawllet/utils/Firebase_Functions.dart';
+import 'package:crawllet/Components/login_screen_component.dart';
+import 'package:crawllet/Routes/app_routes.dart';
+import 'package:crawllet/Controllers/login_screen_controller.dart';
+
+import 'package:crawllet/utils/firebase_functions.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
-import '../Theme/FontSizes.dart';
-import '../Theme/MainColors.dart';
-import '../Theme/Spacing.dart';
+import '../Theme/font_sizes.dart';
+import '../Theme/main_colors.dart';
+import '../Theme/spacing.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -21,12 +21,21 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   @override
+  void initState() {
+    super.initState();
+    Get.lazyPut(() => LoginScreenController());
+  }
+
+
+
+  @override
   Widget build(BuildContext context) {
     return LoginScreenComponent(mainwidget: loginScreenWidget(context));
   }
 }
 
 Widget loginScreenWidget(context) {
+
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   Size size = MediaQuery.of(context).size;
@@ -148,63 +157,75 @@ Widget loginScreenWidget(context) {
                     Padding(
                       padding: EdgeInsets.only(top: Spacing.md),
                       child: Center(
-                        child: TextButton(
-                            onPressed: () async {
-                              try {
-                                if (emailController.text.isNotEmpty &&
-                                    passwordController.text.isNotEmpty &&
-                                    passwordController.text.length > 6) {
-                                  await FirebaseFunctions().login(
-                                    emailController.text.trim(),
-                                    passwordController.text.trim(),
-                                  );
-                                  Get.offAllNamed(AppRoutes.homeScreen);
-                                } else {
-                                  Get.snackbar("Empty fields",
-                                      "Fields are empty or password is less then 6 letters",
-                                      snackPosition: SnackPosition.BOTTOM);
-                                }
-                              } catch (e) {
-                                Get.snackbar("An Error Occurred",
-                                    "Please Check You Connection and try again",
-                                    snackPosition: SnackPosition.BOTTOM);
-                              }
-                            },
-                            child: Container(
-                                width: size.width * 0.7,
-                                height: 50,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(14.0),
-                                    color: MainColors.foregroundColor),
-                                child: Center(
-                                    child: Text(
-                                  "Log In",
-                                  style: TextStyle(
-                                      fontFamily: "harlow",
-                                      fontSize: FontSizes.md,
-                                      color: MainColors.backgroundColors),
-                                )))),
+                        child: Obx(
+                          () => TextButton(
+                              onPressed: Get.find<LoginScreenController>()
+                                      .isLoadingStarted
+                                      .value
+                                  ? null
+                                  : () async {
+                                      try {
+                                        if (emailController.text.isNotEmpty &&
+                                            passwordController
+                                                .text.isNotEmpty &&
+                                            passwordController.text.length >
+                                                6) {
+                                          Get.find<LoginScreenController>()
+                                              .changeIsLoadingStarted(true);
+                                          await FirebaseFunctions().login(
+                                            emailController.text.trim(),
+                                            passwordController.text.trim(),
+                                          );
+                                          if (FirebaseAuth.instance.currentUser!
+                                              .uid.isNotEmpty) {
+                                            Get.offAllNamed(
+                                                AppRoutes.navigationScreen);
+                                          }
+                                        } else {
+                                          Get.find<LoginScreenController>()
+                                              .changeIsLoadingStarted(false);
+                                          Get.snackbar("Empty fields ",
+                                              "Fields are empty or password is less then 6 letters",
+                                              snackPosition:
+                                                  SnackPosition.BOTTOM);
+                                        }
+                                      } catch (e) {
+                                        Get.find<LoginScreenController>()
+                                            .isLoadingStarted(false);
+                                        Get.snackbar("An Error Occurred $e",
+                                            "Please Check You Connection and try again",
+                                            snackPosition:
+                                                SnackPosition.BOTTOM);
+                                      }
+                                    },
+                              child: Container(
+                                  width: size.width * 0.7,
+                                  height: 50,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(14.0),
+                                      color: Get.find<LoginScreenController>()
+                                              .isLoadingStarted
+                                              .value
+                                          ? MainColors.drawingFillColor
+                                          : MainColors.foregroundColor),
+                                  child: Center(
+                                      child: Get.find<LoginScreenController>()
+                                              .isLoadingStarted
+                                              .value
+                                          ? Image.asset(
+                                              "assets/gifs/loading.gif")
+                                          : Text(
+                                              "Log In",
+                                              style: TextStyle(
+                                                  fontFamily: "harlow",
+                                                  fontSize: FontSizes.md,
+                                                  color: MainColors
+                                                      .backgroundColors),
+                                            )))),
+                        ),
                       ),
                     ),
-                    Center(
-                      child: Column(
-                        children: [
-                          Container(
-                            margin: EdgeInsets.only(top: Spacing.md),
-                            alignment: Alignment.center,
-                            width: size.width * 0.18,
-                            height: 70,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(14.0),
-                                color: MainColors.foregroundColor),
-                            child: FaIcon(
-                              FontAwesomeIcons.fingerprint,
-                              size: FontSizes.headingSize + 10,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+
                   ],
                 ),
               ),
@@ -245,7 +266,7 @@ Widget loginScreenWidget(context) {
                         TextButton(
                             style: TextButton.styleFrom(
                                 padding: EdgeInsets.zero,
-                                minimumSize: Size(60, 20),
+                                minimumSize: const Size(60, 20),
                                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                 alignment: Alignment.centerLeft),
                             onPressed: () {
