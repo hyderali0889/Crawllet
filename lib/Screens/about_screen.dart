@@ -11,6 +11,6 @@ class AboutScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: MainColors.foregroundColor ,
 
-      body:Center(child: Text("Hello it's About Screen")));
+      body:const Center(child: Text("Hello it's About Screen")));
   }
 }

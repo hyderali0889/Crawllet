@@ -21,18 +21,19 @@ class _MainComponentState extends State<MainComponent> {
       body: SizedBox(
           width: data.size.width,
           height: data.size.height,
-          child: Stack(
-            children: [
-              CustomPaint(
-                size: const Size(1440, 200),
-                painter: RPSCustomPainter(),
+          child: SingleChildScrollView(
+            child: Stack(
+              children: [
+                CustomPaint(
+                  size: const Size(1240, 150),
+                  painter: RPSCustomPainter(),
                 ),
-                 Padding(
-              padding: EdgeInsets.only(top: data.viewPadding.top),
-              child: widget.widget,
+                Padding(
+                  padding: EdgeInsets.only(top: data.viewPadding.top),
+                  child: widget.widget,
                 ),
-
-            ],
+              ],
+            ),
           )),
     );
   }
@@ -42,8 +43,8 @@ class RPSCustomPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     Path path_0 = Path();
-    path_0.moveTo(0, 200);
-    path_0.lineTo(26.7, 190);
+    path_0.moveTo(0, 150);
+    path_0.lineTo(0, 145);
     path_0.cubicTo(53.3, 180, 107, 128, 160, 112);
     path_0.cubicTo(213.3, 96, 267, 160, 320, 170.7);
     path_0.cubicTo(373.3, 181, 427, 139, 480, 133.3);

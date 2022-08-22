@@ -9,6 +9,6 @@ class AllCards extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: MainColors.foregroundColor,
-        body: Center(child: Text("Hello it's All Cards Screen")));
+        body: const Center(child: Text("Hello it's All Cards Screen")));
   }
 }
