@@ -6,7 +6,11 @@ import 'package:crawllet/Theme/font_sizes.dart';
 import 'package:crawllet/Theme/main_colors.dart';
 import 'package:crawllet/Theme/spacing.dart';
 import 'package:crawllet/utils/api_call.dart';
+import 'package:crawllet/utils/firebase_functions.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import '../Models/firebase_card_model.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -16,15 +20,29 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  bool loading = false;
   TextEditingController cardName = TextEditingController();
+  TextEditingController cardExp = TextEditingController();
   TextEditingController cardNum = TextEditingController();
   TextEditingController cardCompany = TextEditingController();
   TextEditingController cardVCS = TextEditingController();
   dynamic data;
+  dynamic cardData;
   @override
   void initState() {
     super.initState();
     getData();
+    getFirestoreData();
+  }
+
+  getFirestoreData() async {
+    dynamic carddat = await FirebaseFunctions().getUserCardData();
+    if (mounted) {
+      setState(() {
+        cardData = carddat;
+      });
+    }
+    print(carddat);
   }
 
   getData() async {
@@ -163,11 +181,14 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget textField(TextEditingController control, String text) {
+  Widget textField(TextEditingController control, String text,
+      TextInputType val, int maxlines) {
     return Padding(
       padding: const EdgeInsets.only(top: 25.0),
       child: TextField(
         controller: control,
+        maxLines: maxlines,
+        keyboardType: val,
         style: TextStyle(
             fontFamily: "rockwell",
             fontSize: FontSizes.md,
@@ -193,10 +214,21 @@ class _HomeScreenState extends State<HomeScreen> {
       ScrollController scrollController, double bottomSheetOffset) {
     return Column(
       children: [
-        textField(cardName, "Enter Card Holder's Name"),
-        textField(cardNum, "Enter Card Number"),
-        textField(cardCompany, "Enter Card Company"),
-        textField(cardVCS, "Enter Card's Hidden Code"),
+        textField(cardName, "Enter Card Holder's Name", TextInputType.name, 64),
+        textField(cardNum, "Enter Card Number", TextInputType.number, 14),
+        textField(cardCompany, "Enter Card Company", TextInputType.name, 64),
+        SizedBox(
+          height: 150,
+          child: Row(children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15.0),
+              child: textField(
+                  cardExp, "Enter Card Expiry", TextInputType.datetime, 64),
+            ),
+            textField(
+                cardVCS, "Enter Card's Hidden Code", TextInputType.number, 3),
+          ]),
+        ),
         Padding(
           padding: const EdgeInsets.only(top: 25),
           child: TextButton(
@@ -205,21 +237,48 @@ class _HomeScreenState extends State<HomeScreen> {
                   minimumSize: const Size(60, 20),
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   alignment: Alignment.centerLeft),
-              onPressed: () {},
+              onPressed: () async {
+                try {
+                  if (cardName.text.isNotEmpty &&
+                      cardCompany.text.isNotEmpty &&
+                      cardExp.text.isNotEmpty &&
+                      cardVCS.text.isNotEmpty &&
+                      cardNum.text.isNotEmpty) {
+                    setState(() {
+                      loading = true;
+                    });
+                    await FirebaseFunctions().addDatatoFirestore(CardModel(
+                        cardName.text.trim(),
+                        cardNum.text.trim(),
+                        cardCompany.text.trim(),
+                        cardExp.text.trim(),
+                        cardVCS.text.trim()));
+                  }
+                } catch (e) {
+                  Get.snackbar( "Error Occurred" , " Please Try Again "  );
+                  setState(() {
+                    loading = false;
+                  });
+                }
+              },
               child: Container(
                 height: 50,
                 width: MediaQuery.of(context).size.width,
                 decoration: BoxDecoration(
-                    color: MainColors.foregroundColor,
+                    color: loading
+                        ? MainColors.drawingFillColor
+                        : MainColors.foregroundColor,
                     borderRadius: BorderRadius.circular(14)),
                 child: Center(
-                  child: Text(
-                    "Submit",
-                    style: TextStyle(
-                        fontFamily: "harlow",
-                        fontSize: FontSizes.lg,
-                        color: MainColors.headingColor),
-                  ),
+                  child: loading
+                      ? Image.asset("assets/gifs/loading.gif")
+                      : Text(
+                          "Submit",
+                          style: TextStyle(
+                              fontFamily: "harlow",
+                              fontSize: FontSizes.lg,
+                              color: MainColors.headingColor),
+                        ),
                 ),
               )),
         ),
