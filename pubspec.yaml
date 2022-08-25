@@ -10,7 +10,6 @@ environment:
 
 dependencies:
   animated_text_kit: ^4.2.2
-  bottom_sheet: ^3.1.1
   cloud_firestore: any
   cupertino_icons: ^1.0.2
   device_preview: ^1.1.0
@@ -23,6 +22,7 @@ dependencies:
   font_awesome_flutter: ^10.1.0
   get: ^4.6.5
   http: ^0.13.5
+  modal_bottom_sheet: ^2.1.0
   water_drop_nav_bar: ^2.2.0+3
 
 dev_dependencies:

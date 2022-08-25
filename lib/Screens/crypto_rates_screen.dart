@@ -36,15 +36,15 @@ class _CryptoRatesScreenState extends State<CryptoRatesScreen> {
           width: size.width,
           height: size.height,
           child: SingleChildScrollView(
-            child: ListView.builder(
+            child: data !=null ? ListView.builder(
                 itemCount: data["rates"].length,
                 itemBuilder: (context, index) {
                   return Column(
                     children: [
-                      
+                      Text( "${data[1]["price_usd"]}")
                      ],
                   );
-                }),
+                }) : Center(child: CircularProgressIndicator(color: MainColors.backgroundColors,)),
           ),
         ));
   }

@@ -9,6 +9,7 @@ import 'package:crawllet/utils/api_call.dart';
 import 'package:crawllet/utils/firebase_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 import '../Models/firebase_card_model.dart';
 
@@ -43,8 +44,6 @@ class _AllCardsState extends State<AllCards> {
     }
     print(carddat);
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -82,36 +81,30 @@ class _AllCardsState extends State<AllCards> {
               ),
             ),
             Center(
-              child: Padding(
-                padding: EdgeInsets.only(top: Spacing.md),
-                child: TextButton(
-                  onPressed: () {
-                    showFlexibleBottomSheet(
-                      minHeight: 0,
-                      initHeight: 0.6,
-                      maxHeight: 0.6,
-                      context: context,
-                      bottomSheetColor: MainColors.backgroundColors,
-                      builder: _buildBottomSheet,
-                      isExpand: false,
-                    );
-                  },
-                  child: Container(
-                    height: 180,
-                    width: size.width * 0.8,
-                    decoration: BoxDecoration(
-                        color: MainColors.boxFillColor,
-                        borderRadius: BorderRadius.circular(14.0)),
-                    child: Icon(
-                      Icons.add,
-                      size: FontSizes.md,
+              child: Column(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(top: Spacing.md),
+                    child: TextButton(
+                      onPressed: () {
+                        showBottomSheet();
+                      },
+                      child: Container(
+                        height: 180,
+                        width: size.width * 0.8,
+                        decoration: BoxDecoration(
+                            color: MainColors.boxFillColor,
+                            borderRadius: BorderRadius.circular(14.0)),
+                        child: Icon(
+                          Icons.add,
+                          size: FontSizes.md,
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                ],
               ),
             ),
-
-           
           ],
         ),
       ),
@@ -151,21 +144,33 @@ class _AllCardsState extends State<AllCards> {
       ScrollController scrollController, double bottomSheetOffset) {
     return Column(
       children: [
-        textField(cardName, "Enter Card Holder's Name", TextInputType.name, 64),
-        textField(cardNum, "Enter Card Number", TextInputType.number, 14),
-        textField(cardCompany, "Enter Card Company", TextInputType.name, 64),
         SizedBox(
-          height: 150,
-          child: Row(children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15.0),
+            width: 300,
+            child: textField(
+                cardName, "Enter Card Holder's Name", TextInputType.name, 64)),
+        SizedBox(
+            width: 300,
+            child: textField(
+                cardNum, "Enter Card Number", TextInputType.number, 14)),
+        SizedBox(
+            width: 300,
+            child: textField(
+                cardCompany, "Enter Card Company", TextInputType.name, 64)),
+        Row(children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15.0),
+            child: SizedBox(
+              width: 150,
               child: textField(
                   cardExp, "Enter Card Expiry", TextInputType.datetime, 64),
             ),
-            textField(
+          ),
+          SizedBox(
+            width: 150,
+            child: textField(
                 cardVCS, "Enter Card's Hidden Code", TextInputType.number, 3),
-          ]),
-        ),
+          ),
+        ]),
         Padding(
           padding: const EdgeInsets.only(top: 25),
           child: TextButton(
@@ -192,7 +197,7 @@ class _AllCardsState extends State<AllCards> {
                         cardVCS.text.trim()));
                   }
                 } catch (e) {
-                  Get.snackbar( "Error Occurred" , " Please Try Again "  );
+                  Get.snackbar("Error Occurred", " Please Try Again ");
                   setState(() {
                     loading = false;
                   });
@@ -221,5 +226,102 @@ class _AllCardsState extends State<AllCards> {
         ),
       ],
     );
+  }
+
+  showBottomSheet() {
+    return showMaterialModalBottomSheet(
+        enableDrag: true,
+        backgroundColor: MainColors.backgroundColors,
+        context: context,
+        builder: (context) {
+          return Padding(
+            padding: const EdgeInsets.only(top: 50.0),
+            child: Column(
+              children: [
+                SizedBox(
+                    width: 300,
+                    child: textField(cardName, "Enter Card Holder's Name",
+                        TextInputType.name, 64)),
+                SizedBox(
+                    width: 300,
+                    child: textField(cardNum, "Enter Card Number",
+                        TextInputType.number, 14)),
+                SizedBox(
+                    width: 300,
+                    child: textField(cardCompany, "Enter Card Company",
+                        TextInputType.name, 64)),
+                Row(children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                    child: SizedBox(
+                      width: 150,
+                      child: textField(cardExp, "Enter Card Expiry",
+                          TextInputType.datetime, 64),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 180,
+                    child: textField(cardVCS, "Enter Card's Hidden Code",
+                        TextInputType.number, 3),
+                  ),
+                ]),
+                Padding(
+                  padding: const EdgeInsets.only(top: 25),
+                  child: TextButton(
+                      style: TextButton.styleFrom(
+                          padding: EdgeInsets.zero,
+                          minimumSize: const Size(60, 20),
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          alignment: Alignment.centerLeft),
+                      onPressed: () async {
+                        try {
+                          if (cardName.text.isNotEmpty &&
+                              cardCompany.text.isNotEmpty &&
+                              cardExp.text.isNotEmpty &&
+                              cardVCS.text.isNotEmpty &&
+                              cardNum.text.isNotEmpty) {
+                            setState(() {
+                              loading = true;
+                            });
+                            await FirebaseFunctions().addDatatoFirestore(
+                                CardModel(
+                                    cardName.text.trim(),
+                                    cardNum.text.trim(),
+                                    cardCompany.text.trim(),
+                                    cardExp.text.trim(),
+                                    cardVCS.text.trim()));
+                          }
+                        } catch (e) {
+                          Get.snackbar("Error Occurred", " Please Try Again ");
+                          setState(() {
+                            loading = false;
+                          });
+                        }
+                      },
+                      child: Container(
+                        height: 50,
+                        width: MediaQuery.of(context).size.width,
+                        decoration: BoxDecoration(
+                            color: loading
+                                ? MainColors.drawingFillColor
+                                : MainColors.foregroundColor,
+                            borderRadius: BorderRadius.circular(14)),
+                        child: Center(
+                          child: loading
+                              ? Image.asset("assets/gifs/loading.gif")
+                              : Text(
+                                  "Submit",
+                                  style: TextStyle(
+                                      fontFamily: "harlow",
+                                      fontSize: FontSizes.lg,
+                                      color: MainColors.headingColor),
+                                ),
+                        ),
+                      )),
+                ),
+              ],
+            ),
+          );
+        });
   }
 }

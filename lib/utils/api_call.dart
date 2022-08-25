@@ -8,7 +8,7 @@ class ApiCall {
     var client = http.Client();
     try {
       var res = await client.get(
-          Uri.parse("http://api.coinlayer.com/api/live?access_key=05e7f8205b486dd9e51a0d5548648768"));
+          Uri.parse("https://rest.coinapi.io/v1/assets?apikey=F05194A9-8713-47A8-ABB9-49E29EE85F2A"));
       if (res.statusCode == 200) {
         return json.decode(res.body);
       } else if (res.statusCode == 502) {
