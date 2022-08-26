@@ -1,15 +1,16 @@
 // ignore_for_file: file_names
 
-import 'package:bottom_sheet/bottom_sheet.dart';
 import 'package:crawllet/Components/main_component.dart';
+import 'package:crawllet/Controllers/home_screen_controller.dart';
 import 'package:crawllet/Theme/font_sizes.dart';
 import 'package:crawllet/Theme/main_colors.dart';
 import 'package:crawllet/Theme/spacing.dart';
 import 'package:crawllet/utils/api_call.dart';
 import 'package:crawllet/utils/firebase_functions.dart';
+import 'package:custom_bottom_sheet/custom_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:simple_month_year_picker/simple_month_year_picker.dart';
 
 import '../Models/firebase_card_model.dart';
 
@@ -21,7 +22,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  bool loading = false;
   TextEditingController cardName = TextEditingController();
   TextEditingController cardExp = TextEditingController();
   TextEditingController cardNum = TextEditingController();
@@ -32,32 +32,43 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    Get.put<HomeScreenController>(HomeScreenController());
     getData();
     getFirestoreData();
   }
 
   getFirestoreData() async {
-    dynamic carddat = await FirebaseFunctions().getUserCardData();
-    if (mounted) {
-      setState(() {
-        cardData = carddat;
-      });
+    try {
+      dynamic carddat = await FirebaseFunctions().getUserCardData();
+      if (mounted) {
+        setState(() {
+          cardData = carddat;
+        });
+      }
+      print(carddat);
+    } catch (e) {
+      Get.snackbar("Error", "Internet Connection Not available");
     }
-    print(carddat);
   }
 
   getData() async {
-    dynamic dat = await ApiCall().fetchCryptoData();
+    try {
+      dynamic dat = await ApiCall().fetchCryptoData();
 
-    if (mounted) {
-      setState(() {
-        data = dat;
-      });
+      if (mounted) {
+        setState(() {
+          data = dat;
+        });
+      }
+    } catch (e) {
+      Get.snackbar("Error", "Internet Connection Not available");
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    HomeScreenController controller = Get.find<HomeScreenController>();
+
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: MainColors.foregroundColor,
@@ -98,7 +109,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     padding: EdgeInsets.only(top: Spacing.md),
                     child: TextButton(
                       onPressed: () {
-                        showBottomSheet();
+                        showBottomSheet(context, controller);
                       },
                       child: Container(
                         height: 180,
@@ -184,7 +195,7 @@ class _HomeScreenState extends State<HomeScreen> {
       padding: const EdgeInsets.only(top: 25.0),
       child: TextField(
         controller: control,
-         maxLines: maxlines,
+        maxLines: maxlines,
         keyboardType: val,
         style: TextStyle(
             fontFamily: "rockwell",
@@ -207,100 +218,139 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  showBottomSheet() {
-    return showMaterialModalBottomSheet(
-        enableDrag: true,
-        backgroundColor: MainColors.backgroundColors,
-        context: context,
-        builder: (context) {
-          return Padding(
-            padding: const EdgeInsets.only(top:50.0),
-            child: Column(
+  showBottomSheet(context, controller) {
+    SlideDialog.showSlideDialog(
+      context: context,
+      backgroundColor: MainColors.backgroundColors,
+      pillColor: Colors.yellow,
+      transitionDuration: const Duration(milliseconds: 300),
+      child: Padding(
+        padding: const EdgeInsets.only(top: 0.0),
+        child: SizedBox(
+          height: 350,
+          child: ListView(children: [
+            Column(
               children: [
+                Padding(
+                  padding: const EdgeInsets.only(
+                      top: 10.0, bottom: 20.0, left: 10.0),
+                  child: Text(
+                    "Enter Card Details",
+                    style: TextStyle(
+                        fontSize: FontSizes.headingSize,
+                        fontFamily: "Harlow",
+                        color: MainColors.headingColor),
+                  ),
+                ),
                 SizedBox(
                     width: 300,
+                    height: 80,
                     child: textField(cardName, "Enter Card Holder's Name",
                         TextInputType.name, 64)),
                 SizedBox(
                     width: 300,
-                    child: textField(
-                        cardNum, "Enter Card Number", TextInputType.number, 14)),
+                    height: 80,
+                    child: textField(cardNum, "Enter Card Number",
+                        TextInputType.number, 14)),
                 SizedBox(
                     width: 300,
+                    height: 80,
                     child: textField(cardCompany, "Enter Card Company",
                         TextInputType.name, 64)),
-                Row(children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                    child: SizedBox(
-                      width: 150,
-                      child: textField(cardExp, "Enter Card Expiry",
-                          TextInputType.datetime, 64),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 180,
-                    child: textField(cardVCS, "Enter Card's Hidden Code",
-                        TextInputType.number, 3),
-                  ),
-                ]),
-                Padding(
-                  padding: const EdgeInsets.only(top: 25),
-                  child: TextButton(
-                      style: TextButton.styleFrom(
-                          padding: EdgeInsets.zero,
-                          minimumSize: const Size(60, 20),
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          alignment: Alignment.centerLeft),
-                      onPressed: () async {
-                        try {
-                          if (cardName.text.isNotEmpty &&
-                              cardCompany.text.isNotEmpty &&
-                              cardExp.text.isNotEmpty &&
-                              cardVCS.text.isNotEmpty &&
-                              cardNum.text.isNotEmpty) {
-                            setState(() {
-                              loading = true;
+                Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 15.0),
+                      child: TextButton(
+                          onPressed: () async {
+                            await SimpleMonthYearPicker
+                                .showMonthYearPickerDialog(
+                              titleFontFamily: "Harlow",
+                              context: context,
+                            ).then((value) {
+                              controller.addDate(value);
                             });
-                            await FirebaseFunctions().addDatatoFirestore(
-                                CardModel(
-                                    cardName.text.trim(),
-                                    cardNum.text.trim(),
-                                    cardCompany.text.trim(),
-                                    cardExp.text.trim(),
-                                    cardVCS.text.trim()));
+                          },
+                          child: Container(
+                            height: 60,
+                            width: 150,
+                            decoration: BoxDecoration(
+                                color: MainColors.foregroundColor,
+                                borderRadius: BorderRadius.circular(14)),
+                            child: Center(
+                                child: Text(
+                              "Choose Exp Date",
+                              style: TextStyle(color: MainColors.headingColor),
+                            )),
+                          )),
+                    ),
+                    SizedBox(
+                        width: 180,
+                        height: 80,
+                        child: textField(
+                            cardVCS, "Card's CVC", TextInputType.name, 64)),
+                  ],
+                ),
+                Obx(
+                  () => Padding(
+                    padding: const EdgeInsets.only(top: 25),
+                    child: TextButton(
+                        style: TextButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            minimumSize: const Size(60, 20),
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            alignment: Alignment.centerLeft),
+                        onPressed: () async {
+                          try {
+                            if (cardName.text.isNotEmpty ||
+                                cardCompany.text.isNotEmpty ||
+                                controller.date.value != null ||
+                                cardVCS.text.isNotEmpty ||
+                                cardNum.text.isNotEmpty) {
+                              controller.changeisloading(true);
+                              await FirebaseFunctions().addDatatoFirestore(
+                                  CardModel(
+                                      cardName.text.trim(),
+                                      cardNum.text.trim(),
+                                      cardCompany.text.trim(),
+                                      controller.date.value.toString(),
+                                      cardVCS.text.trim()));
+                              controller.changeisloading(false);
+                              Get.snackbar("Uploaded", "Upload Complete");
+                            }
+                          } catch (e) {
+                            Get.snackbar(
+                                "Error Occurred", " Please Try Again $e ");
+                            controller.changeisloading(false);
                           }
-                        } catch (e) {
-                          Get.snackbar("Error Occurred", " Please Try Again ");
-                          setState(() {
-                            loading = false;
-                          });
-                        }
-                      },
-                      child: Container(
-                        height: 50,
-                        width: MediaQuery.of(context).size.width,
-                        decoration: BoxDecoration(
-                            color: loading
-                                ? MainColors.drawingFillColor
-                                : MainColors.foregroundColor,
-                            borderRadius: BorderRadius.circular(14)),
-                        child: Center(
-                          child: loading
-                              ? Image.asset("assets/gifs/loading.gif")
-                              : Text(
-                                  "Submit",
-                                  style: TextStyle(
-                                      fontFamily: "harlow",
-                                      fontSize: FontSizes.lg,
-                                      color: MainColors.headingColor),
-                                ),
-                        ),
-                      )),
+                        },
+                        child: Container(
+                          height: 50,
+                          width: MediaQuery.of(context).size.width,
+                          decoration: BoxDecoration(
+                              color: controller.isLoading.value
+                                  ? MainColors.drawingFillColor
+                                  : MainColors.foregroundColor,
+                              borderRadius: BorderRadius.circular(14)),
+                          child: Center(
+                            child: controller.isLoading.value
+                                ? Image.asset("assets/gifs/loading.gif")
+                                : Text(
+                                    "Submit",
+                                    style: TextStyle(
+                                        fontFamily: "harlow",
+                                        fontSize: FontSizes.lg,
+                                        color: MainColors.headingColor),
+                                  ),
+                          ),
+                        )),
+                  ),
                 ),
               ],
             ),
-          );
-        });
+          ]),
+        ),
+      ),
+    );
   }
 }
