@@ -1,17 +1,20 @@
-// ignore_for_file: file_names
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crawllet/Components/main_component.dart';
 import 'package:crawllet/Controllers/home_screen_controller.dart';
+import 'package:crawllet/Routes/app_routes.dart';
 import 'package:crawllet/Theme/font_sizes.dart';
 import 'package:crawllet/Theme/main_colors.dart';
 import 'package:crawllet/Theme/spacing.dart';
 import 'package:crawllet/utils/api_call.dart';
 import 'package:crawllet/utils/firebase_functions.dart';
 import 'package:custom_bottom_sheet/custom_bottom_sheet.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:simple_month_year_picker/simple_month_year_picker.dart';
 
+import '../Components/home_card.dart';
+import '../Constants/firebase_conts.dart';
 import '../Models/firebase_card_model.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -27,41 +30,42 @@ class _HomeScreenState extends State<HomeScreen> {
   TextEditingController cardNum = TextEditingController();
   TextEditingController cardCompany = TextEditingController();
   TextEditingController cardVCS = TextEditingController();
-  dynamic data;
-  dynamic cardData;
+  dynamic apiData;
+  dynamic userData;
   @override
   void initState() {
     super.initState();
     Get.put<HomeScreenController>(HomeScreenController());
     getData();
-    getFirestoreData();
-  }
-
-  getFirestoreData() async {
-    try {
-      dynamic carddat = await FirebaseFunctions().getUserCardData();
-      if (mounted) {
-        setState(() {
-          cardData = carddat;
-        });
-      }
-      print(carddat);
-    } catch (e) {
-      Get.snackbar("Error", "Internet Connection Not available");
-    }
+    getUserData();
   }
 
   getData() async {
     try {
-      dynamic dat = await ApiCall().fetchCryptoData();
+      List<dynamic> dat = await ApiCall().fetchCryptoData();
 
-      if (mounted) {
+      if (mounted && dat.isNotEmpty) {
         setState(() {
-          data = dat;
+          apiData = dat;
         });
       }
     } catch (e) {
-      Get.snackbar("Error", "Internet Connection Not available");
+      Get.snackbar("Error", "Internet Not available $e");
+    }
+  }
+
+  getUserData() async {
+    try {
+      dynamic data = await FirebaseFunctions().getUserCardData();
+
+      if (mounted && data != null) {
+        setState(() {
+          userData = data;
+        });
+      }
+      // print(data.docs[0]["email"]);
+    } catch (e) {
+      Get.snackbar("Error", "Internet Connection Not available $e");
     }
   }
 
@@ -95,7 +99,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Padding(
               padding: const EdgeInsets.only(top: 100.0, left: 10.0),
               child: Text(
-                " Favorite Cards ",
+                " Your Cards ",
                 style: TextStyle(
                     fontSize: FontSizes.headingSize,
                     fontFamily: "Harlow",
@@ -106,21 +110,67 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Column(
                 children: [
                   Padding(
-                    padding: EdgeInsets.only(top: Spacing.md),
-                    child: TextButton(
-                      onPressed: () {
-                        showBottomSheet(context, controller);
-                      },
-                      child: Container(
-                        height: 180,
-                        width: size.width * 0.8,
-                        decoration: BoxDecoration(
-                            color: MainColors.boxFillColor,
-                            borderRadius: BorderRadius.circular(14.0)),
-                        child: Icon(
-                          Icons.add,
-                          size: FontSizes.md,
-                        ),
+                    padding: const EdgeInsets.symmetric(vertical: 15.0),
+                    child: SizedBox(
+                      width: size.width,
+                      height: 240,
+                      child: ListView(
+                        scrollDirection: Axis.horizontal,
+                        children: [
+                          Row(
+                            children: [
+                              userData != null
+                                  ? SizedBox(
+                                      width: size.width,
+                                      height: 180,
+                                      child: ListView.builder(
+                                          scrollDirection: Axis.horizontal,
+                                          padding:
+                                              const EdgeInsets.only(top: 10.0),
+                                          itemCount: userData.docs.length + 1,
+                                          itemBuilder: (context, index) {
+                                            if (index != 0) {
+                                              if (index ==
+                                                  userData.docs.length) {
+                                                return TextButton(
+                                                  onPressed: () {
+                                                    showBottomSheet(
+                                                        context, controller);
+                                                  },
+                                                  child: Container(
+                                                    height: 180,
+                                                    width: size.width * 0.8,
+                                                    decoration: BoxDecoration(
+                                                        color: MainColors
+                                                            .boxFillColor,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(
+                                                                    14.0)),
+                                                    child: Icon(
+                                                      Icons.add,
+                                                      size: FontSizes.md,
+                                                    ),
+                                                  ),
+                                                );
+                                              }
+                                              return Padding(
+                                                  padding: const EdgeInsets
+                                                          .symmetric(
+                                                      horizontal: 12.0),
+                                                  child: HomeCard().creditCard(
+                                                      userData.docs[index]));
+                                            }
+                                            return Container();
+                                          }),
+                                    )
+                                  : Center(
+                                      child: CircularProgressIndicator(
+                                      color: MainColors.boxFillColor,
+                                    )),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -128,7 +178,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(top: 25.0, left: 10.0),
+              padding: const EdgeInsets.only(top: 15.0, left: 10.0),
               child: Text(
                 "Leading Currency",
                 style: TextStyle(
@@ -137,7 +187,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: MainColors.backgroundColors),
               ),
             ),
-            data != null
+            apiData != null
                 ? Center(
                     child: Container(
                       alignment: Alignment.center,
@@ -166,7 +216,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             Padding(
                               padding: const EdgeInsets.only(top: 15.0),
                               child: Text(
-                                "${data[1]["price_usd"]}",
+                                "${apiData[1]["price_usd"]} \$".substring(0, 5),
                                 style: TextStyle(
                                     fontSize: FontSizes.xl,
                                     fontFamily: "Harlow",
@@ -227,7 +277,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Padding(
         padding: const EdgeInsets.only(top: 0.0),
         child: SizedBox(
-          height: 350,
+          height: 450,
           child: ListView(children: [
             Column(
               children: [
@@ -315,8 +365,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                       cardCompany.text.trim(),
                                       controller.date.value.toString(),
                                       cardVCS.text.trim()));
+
                               controller.changeisloading(false);
                               Get.snackbar("Uploaded", "Upload Complete");
+                              Get.offAllNamed(AppRoutes.navigationScreen);
                             }
                           } catch (e) {
                             Get.snackbar(

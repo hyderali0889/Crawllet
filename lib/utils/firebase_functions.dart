@@ -2,9 +2,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crawllet/Constants/firebase_conts.dart';
 import 'package:crawllet/Models/firebase_card_model.dart';
+import 'package:crawllet/Routes/app_routes.dart';
 import "package:firebase_auth/firebase_auth.dart";
+import 'package:get/get.dart';
 
 class FirebaseFunctions {
+  int num = 1;
   FirebaseAuth auth = FirebaseAuth.instance;
   FirebaseFirestore firestore = FirebaseFirestore.instance;
 
@@ -27,6 +30,7 @@ class FirebaseFunctions {
 
   signout() async {
     await auth.signOut();
+    Get.offAllNamed(AppRoutes.loginScreen);
   }
 
   forgotPassword(email) async {
@@ -34,18 +38,18 @@ class FirebaseFunctions {
   }
 
   addDatatoFirestore(CardModel model) {
-    firestore.collection(auth.currentUser!.uid).doc("User_data").update({
+    firestore.collection(auth.currentUser!.uid).doc("card_$num").set({
       FirebaseConsts().cardName: model.cardName,
-       FirebaseConsts().cardNum: model.cardNum,
+      FirebaseConsts().cardNum: model.cardNum,
       FirebaseConsts().cardCompany: model.cardCompany,
       FirebaseConsts().cardExp: model.cardExpiry,
       FirebaseConsts().cardVCS: model.cardVCS,
     });
   }
 
-  getUserCardData() async{
-    dynamic data = await firestore.collection(auth.currentUser!.uid).get();
-
+  getUserCardData() async {
+    QuerySnapshot<Map<String, dynamic>> data =
+        await firestore.collection(auth.currentUser!.uid).get();
     return data;
   }
 }

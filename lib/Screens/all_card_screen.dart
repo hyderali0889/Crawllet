@@ -12,6 +12,7 @@ import 'package:get/get.dart';
 import 'package:simple_month_year_picker/simple_month_year_picker.dart';
 
 import '../Models/firebase_card_model.dart';
+import '../Routes/app_routes.dart';
 
 class AllCards extends StatefulWidget {
   const AllCards({Key? key}) : super(key: key);
@@ -25,7 +26,8 @@ class _AllCardsState extends State<AllCards> {
   TextEditingController cardNum = TextEditingController();
   TextEditingController cardCompany = TextEditingController();
   TextEditingController cardVCS = TextEditingController();
-  dynamic cardData;
+  dynamic userdata;
+
   @override
   void initState() {
     super.initState();
@@ -34,20 +36,19 @@ class _AllCardsState extends State<AllCards> {
     getFirestoreData();
   }
 
-
   getFirestoreData() async {
     dynamic carddat = await FirebaseFunctions().getUserCardData();
-    if (mounted) {
+    if (mounted && carddat != null) {
       setState(() {
-        cardData = carddat;
+        userdata = carddat;
       });
     }
-    print(carddat);
+
   }
 
   @override
   Widget build(BuildContext context) {
-  AllCardsController controller = Get.find<AllCardsController>();
+    AllCardsController controller = Get.find<AllCardsController>();
 
     Size size = MediaQuery.of(context).size;
     return Scaffold(
@@ -89,7 +90,7 @@ class _AllCardsState extends State<AllCards> {
                     padding: EdgeInsets.only(top: Spacing.md),
                     child: TextButton(
                       onPressed: () {
-                        showBottomSheet(context,controller);
+                        showBottomSheet(context, controller);
                       },
                       child: Container(
                         height: 180,
@@ -241,6 +242,7 @@ class _AllCardsState extends State<AllCards> {
                                       cardVCS.text.trim()));
                               controller.changeisloading(false);
                               Get.snackbar("Uploaded", "Upload Complete");
+                              Get.offAllNamed(AppRoutes.allCards);
                             }
                           } catch (e) {
                             Get.snackbar(
