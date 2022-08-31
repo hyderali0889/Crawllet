@@ -1,5 +1,3 @@
-// ignore_for_file: file_names
-
 import 'package:crawllet/Components/main_component.dart';
 import 'package:crawllet/Controllers/all_cards_controller.dart';
 import 'package:crawllet/Theme/font_sizes.dart';
@@ -10,10 +8,8 @@ import 'package:custom_bottom_sheet/custom_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:simple_month_year_picker/simple_month_year_picker.dart';
-
 import '../Components/home_card.dart';
 import '../Models/firebase_card_model.dart';
-import '../Routes/app_routes.dart';
 import 'navigation_screen.dart';
 
 class AllCards extends StatefulWidget {

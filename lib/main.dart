@@ -9,7 +9,6 @@ import 'package:crawllet/Screens/login_screen.dart';
 import 'package:crawllet/Screens/navigation_screen.dart';
 import 'package:crawllet/Screens/signup_screen.dart';
 import 'package:crawllet/firebase_options.dart';
-import 'package:device_preview/device_preview.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +21,7 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  runApp(DevicePreview(builder: (context) => const MyApp()));
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -32,8 +31,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       useInheritedMediaQuery: true,
-      locale: DevicePreview.locale(context),
-      builder: DevicePreview.appBuilder,
       initialRoute: AppRoutes.splashScreen,
       getPages: [
         GetPage(name: AppRoutes.splashScreen, page: () => const SplashScreen()),

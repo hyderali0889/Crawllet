@@ -1,7 +1,6 @@
 import 'package:crawllet/Components/main_component.dart';
 import 'package:crawllet/Theme/font_sizes.dart';
 import 'package:crawllet/Theme/main_colors.dart';
-import 'package:crawllet/utils/api_call.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
