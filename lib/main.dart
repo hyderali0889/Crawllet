@@ -34,11 +34,9 @@ class MyApp extends StatelessWidget {
       useInheritedMediaQuery: true,
       locale: DevicePreview.locale(context),
       builder: DevicePreview.appBuilder,
-initialRoute: AppRoutes.splashScreen,
+      initialRoute: AppRoutes.splashScreen,
       getPages: [
-           GetPage(
-            name: AppRoutes.splashScreen,
-            page: () => const SplashScreen()),
+        GetPage(name: AppRoutes.splashScreen, page: () => const SplashScreen()),
         GetPage(
             name: AppRoutes.getStartedScreen,
             page: () => const GetStartedScreen()),
@@ -47,9 +45,6 @@ initialRoute: AppRoutes.splashScreen,
         GetPage(
             name: AppRoutes.forgotPasswordScreen,
             page: () => const ForgotPasswordScreen()),
-        GetPage(
-            name: AppRoutes.navigationScreen,
-            page: () => const NavigationScreen()),
         GetPage(name: AppRoutes.homeScreen, page: () => const HomeScreen()),
         GetPage(name: AppRoutes.allCards, page: () => const AllCards()),
         GetPage(
@@ -62,7 +57,9 @@ initialRoute: AppRoutes.splashScreen,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.active) {
             if (snapshot.hasData) {
-              return const NavigationScreen();
+              return const NavigationScreen(
+                num: 0,
+              );
             } else {
               return const SplashScreen();
             }

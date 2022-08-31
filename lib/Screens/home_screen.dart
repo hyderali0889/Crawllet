@@ -1,20 +1,17 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crawllet/Components/main_component.dart';
 import 'package:crawllet/Controllers/home_screen_controller.dart';
-import 'package:crawllet/Routes/app_routes.dart';
+import 'package:crawllet/Screens/navigation_screen.dart';
 import 'package:crawllet/Theme/font_sizes.dart';
 import 'package:crawllet/Theme/main_colors.dart';
 import 'package:crawllet/Theme/spacing.dart';
 import 'package:crawllet/utils/api_call.dart';
 import 'package:crawllet/utils/firebase_functions.dart';
 import 'package:custom_bottom_sheet/custom_bottom_sheet.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:simple_month_year_picker/simple_month_year_picker.dart';
 
 import '../Components/home_card.dart';
-import '../Constants/firebase_conts.dart';
 import '../Models/firebase_card_model.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -50,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
         });
       }
     } catch (e) {
-      Get.snackbar("Error", "Internet Not available $e");
+      Get.snackbar("Error", "Internet Not available");
     }
   }
 
@@ -65,7 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
       }
       // print(data.docs[0]["email"]);
     } catch (e) {
-      Get.snackbar("Error", "Internet Connection Not available $e");
+      Get.snackbar("Error", "Internet Connection Not available");
     }
   }
 
@@ -111,68 +108,48 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 15.0),
-                    child: SizedBox(
-                      width: size.width,
-                      height: 240,
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
-                        children: [
-                          Row(
-                            children: [
-                              userData != null
-                                  ? SizedBox(
-                                      width: size.width,
-                                      height: 180,
-                                      child: ListView.builder(
-                                          scrollDirection: Axis.horizontal,
-                                          padding:
-                                              const EdgeInsets.only(top: 10.0),
-                                          itemCount: userData.docs.length + 1,
-                                          itemBuilder: (context, index) {
-                                            if (index != 0) {
-                                              if (index ==
-                                                  userData.docs.length) {
-                                                return TextButton(
-                                                  onPressed: () {
-                                                    showBottomSheet(
-                                                        context, controller);
-                                                  },
-                                                  child: Container(
-                                                    height: 180,
-                                                    width: size.width * 0.8,
-                                                    decoration: BoxDecoration(
-                                                        color: MainColors
-                                                            .boxFillColor,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(
-                                                                    14.0)),
-                                                    child: Icon(
-                                                      Icons.add,
-                                                      size: FontSizes.md,
-                                                    ),
-                                                  ),
-                                                );
-                                              }
-                                              return Padding(
-                                                  padding: const EdgeInsets
-                                                          .symmetric(
-                                                      horizontal: 12.0),
-                                                  child: HomeCard().creditCard(
-                                                      userData.docs[index]));
-                                            }
-                                            return Container();
-                                          }),
-                                    )
-                                  : Center(
-                                      child: CircularProgressIndicator(
-                                      color: MainColors.boxFillColor,
-                                    )),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
+                    child: userData != null
+                        ? SizedBox(
+                            width: size.width,
+                            height: 180,
+                            child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                padding: const EdgeInsets.only(top: 10.0),
+                                itemCount: userData.docs.length + 1,
+                                itemBuilder: (context, index) {
+                                  if (index != 0) {
+                                    if (index == userData.docs.length) {
+                                      return TextButton(
+                                        onPressed: () {
+                                          showBottomSheet(context, controller);
+                                        },
+                                        child: Container(
+                                          height: 180,
+                                          width: size.width * 0.8,
+                                          decoration: BoxDecoration(
+                                              color: MainColors.boxFillColor,
+                                              borderRadius:
+                                                  BorderRadius.circular(14.0)),
+                                          child: Icon(
+                                            Icons.add,
+                                            size: FontSizes.md,
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                    return Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 12.0),
+                                        child: HomeCard()
+                                            .creditCard(userData.docs[index]));
+                                  }
+                                  return Container();
+                                }),
+                          )
+                        : Center(
+                            child: CircularProgressIndicator(
+                            color: MainColors.boxFillColor,
+                          )),
                   ),
                 ],
               ),
@@ -206,7 +183,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 top: 5.0,
                               ),
                               child: Text(
-                                "Bitcoin",
+                                "${apiData[0]["name"]}",
                                 style: TextStyle(
                                     fontSize: FontSizes.xl,
                                     fontFamily: "Harlow",
@@ -216,7 +193,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             Padding(
                               padding: const EdgeInsets.only(top: 15.0),
                               child: Text(
-                                "${apiData[1]["price_usd"]} \$".substring(0, 5),
+                                "\$ ${apiData[0]["current_price"]}".substring(0, 5),
                                 style: TextStyle(
                                     fontSize: FontSizes.xl,
                                     fontFamily: "Harlow",
@@ -352,10 +329,10 @@ class _HomeScreenState extends State<HomeScreen> {
                             alignment: Alignment.centerLeft),
                         onPressed: () async {
                           try {
-                            if (cardName.text.isNotEmpty ||
-                                cardCompany.text.isNotEmpty ||
-                                controller.date.value != null ||
-                                cardVCS.text.isNotEmpty ||
+                            if (cardName.text.isNotEmpty &&
+                                cardCompany.text.isNotEmpty &&
+                                controller.date.value != null &&
+                                cardVCS.text.isNotEmpty &&
                                 cardNum.text.isNotEmpty) {
                               controller.changeisloading(true);
                               await FirebaseFunctions().addDatatoFirestore(
@@ -368,7 +345,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
                               controller.changeisloading(false);
                               Get.snackbar("Uploaded", "Upload Complete");
-                              Get.offAllNamed(AppRoutes.navigationScreen);
+                              Get.offAll(const NavigationScreen(num: 0));
+                            }
+                            else {
+                              Get.snackbar("Error", "All Fields Are Required");
                             }
                           } catch (e) {
                             Get.snackbar(

@@ -1,6 +1,7 @@
 // ignore_for_file: file_names
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crawllet/Constants/firebase_conts.dart';
+import 'package:crawllet/Controllers/firebase_functions_controller.dart';
 import 'package:crawllet/Models/firebase_card_model.dart';
 import 'package:crawllet/Routes/app_routes.dart';
 import "package:firebase_auth/firebase_auth.dart";
@@ -29,8 +30,11 @@ class FirebaseFunctions {
   }
 
   signout() async {
-    await auth.signOut();
+    await auth.signOut().then((value) {
+
     Get.offAllNamed(AppRoutes.loginScreen);
+    });
+
   }
 
   forgotPassword(email) async {
@@ -38,12 +42,19 @@ class FirebaseFunctions {
   }
 
   addDatatoFirestore(CardModel model) {
-    firestore.collection(auth.currentUser!.uid).doc("card_$num").set({
+    Get.put(FirebaseController());
+    FirebaseController controller = Get.find<FirebaseController>();
+    firestore
+        .collection(auth.currentUser!.uid)
+        .doc("card_${controller.num}")
+        .set({
       FirebaseConsts().cardName: model.cardName,
       FirebaseConsts().cardNum: model.cardNum,
       FirebaseConsts().cardCompany: model.cardCompany,
       FirebaseConsts().cardExp: model.cardExpiry,
       FirebaseConsts().cardVCS: model.cardVCS,
+    }).then((value) {
+      controller.addADigit();
     });
   }
 

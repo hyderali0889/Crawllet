@@ -11,6 +11,7 @@ import 'package:get/get.dart';
 import '../Theme/font_sizes.dart';
 import '../Theme/main_colors.dart';
 import '../Theme/spacing.dart';
+import 'navigation_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -178,8 +179,8 @@ Widget loginScreenWidget(context) {
                                           );
                                           if (FirebaseAuth.instance.currentUser!
                                               .uid.isNotEmpty) {
-                                            Get.offAllNamed(
-                                                AppRoutes.navigationScreen);
+                                             Get.offAll(
+                                          const NavigationScreen(num: 0) );
                                           }
                                         } else {
                                           Get.find<LoginScreenController>()

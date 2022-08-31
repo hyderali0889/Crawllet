@@ -11,8 +11,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:simple_month_year_picker/simple_month_year_picker.dart';
 
+import '../Components/home_card.dart';
 import '../Models/firebase_card_model.dart';
 import '../Routes/app_routes.dart';
+import 'navigation_screen.dart';
 
 class AllCards extends StatefulWidget {
   const AllCards({Key? key}) : super(key: key);
@@ -43,7 +45,6 @@ class _AllCardsState extends State<AllCards> {
         userdata = carddat;
       });
     }
-
   }
 
   @override
@@ -87,23 +88,56 @@ class _AllCardsState extends State<AllCards> {
               child: Column(
                 children: [
                   Padding(
-                    padding: EdgeInsets.only(top: Spacing.md),
-                    child: TextButton(
-                      onPressed: () {
-                        showBottomSheet(context, controller);
-                      },
-                      child: Container(
-                        height: 180,
-                        width: size.width * 0.8,
-                        decoration: BoxDecoration(
+                    padding: const EdgeInsets.symmetric(vertical: 15.0),
+                    child: userdata != null
+                        ? SizedBox(
+                            width: size.width * 0.9,
+                            height: size.height * 0.58,
+                            child: ListView.builder(
+                                scrollDirection: Axis.vertical,
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 10.0),
+                                itemCount: userdata.docs.length + 1,
+                                itemBuilder: (context, index) {
+                                  if (index != 0) {
+                                    if (index == userdata.docs.length) {
+                                      return Padding(
+                                        padding: const EdgeInsets.only(
+                                            bottom: 20.0),
+                                        child: TextButton(
+                                          onPressed: () {
+                                            showBottomSheet(
+                                                context, controller);
+                                          },
+                                          child: Container(
+                                            height: 180,
+                                            width: size.width * 0.8,
+                                            decoration: BoxDecoration(
+                                                color: MainColors.boxFillColor,
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                        14.0)),
+                                            child: Icon(
+                                              Icons.add,
+                                              size: FontSizes.md,
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                    return Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 12.0),
+                                        child: HomeCard()
+                                            .creditCard(userdata.docs[index]));
+                                  }
+                                  return Container();
+                                }),
+                          )
+                        : Center(
+                            child: CircularProgressIndicator(
                             color: MainColors.boxFillColor,
-                            borderRadius: BorderRadius.circular(14.0)),
-                        child: Icon(
-                          Icons.add,
-                          size: FontSizes.md,
-                        ),
-                      ),
-                    ),
+                          )),
                   ),
                 ],
               ),
@@ -152,7 +186,7 @@ class _AllCardsState extends State<AllCards> {
       child: Padding(
         padding: const EdgeInsets.only(top: 0.0),
         child: SizedBox(
-          height: 350,
+          height: 450,
           child: ListView(children: [
             Column(
               children: [
@@ -227,10 +261,10 @@ class _AllCardsState extends State<AllCards> {
                             alignment: Alignment.centerLeft),
                         onPressed: () async {
                           try {
-                            if (cardName.text.isNotEmpty ||
-                                cardCompany.text.isNotEmpty ||
-                                controller.date.value != null ||
-                                cardVCS.text.isNotEmpty ||
+                            if (cardName.text.isNotEmpty &&
+                                cardCompany.text.isNotEmpty &&
+                                controller.date.value != null &&
+                                cardVCS.text.isNotEmpty &&
                                 cardNum.text.isNotEmpty) {
                               controller.changeisloading(true);
                               await FirebaseFunctions().addDatatoFirestore(
@@ -242,7 +276,9 @@ class _AllCardsState extends State<AllCards> {
                                       cardVCS.text.trim()));
                               controller.changeisloading(false);
                               Get.snackbar("Uploaded", "Upload Complete");
-                              Get.offAllNamed(AppRoutes.allCards);
+                              Get.offAll(const NavigationScreen(num: 1));
+                            } else {
+                              Get.snackbar("Error", "All Fields Are Required");
                             }
                           } catch (e) {
                             Get.snackbar(

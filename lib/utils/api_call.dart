@@ -8,7 +8,7 @@ class ApiCall {
     var client = http.Client();
     try {
       var res = await client.get(
-          Uri.parse("https://rest.coinapi.io/v1/assets?apikey=F05194A9-8713-47A8-ABB9-49E29EE85F2A"));
+          Uri.parse("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd"));
       if (res.statusCode == 200) {
         return json.decode(res.body);
       } else if (res.statusCode == 502) {

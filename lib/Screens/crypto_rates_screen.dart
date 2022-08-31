@@ -28,7 +28,6 @@ class _CryptoRatesScreenState extends State<CryptoRatesScreen> {
         setState(() {
           apiData = dat;
         });
-        print(apiData);
       }
     } catch (e) {
       Get.snackbar("Error", "Internet Not available $e");
@@ -51,7 +50,7 @@ class _CryptoRatesScreenState extends State<CryptoRatesScreen> {
                     alignment: Alignment.center,
                     child: Padding(
                       padding: const EdgeInsets.only(
-                          top: 10.0, bottom: 20.0, left: 10.0),
+                          top: 10.0, bottom: 40.0, left: 10.0),
                       child: Text(
                         "All Cryptos",
                         style: TextStyle(
@@ -62,16 +61,17 @@ class _CryptoRatesScreenState extends State<CryptoRatesScreen> {
                     ),
                   ),
                   apiData != null
-                      ? Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                              height: 500,
-                              width: size.width,
-                              child: ListView.builder(
-                                  itemCount: apiData.length,
-                                  itemBuilder: (context, index) {
-                                    if (index != 0) {
+                      ? Padding(
+                          padding: const EdgeInsets.only(top: 50.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              SizedBox(
+                                height: size.height * 0.8,
+                                width: size.width,
+                                child: ListView.builder(
+                                    itemCount: apiData.length,
+                                    itemBuilder: (context, index) {
                                       return Column(
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
@@ -118,7 +118,7 @@ class _CryptoRatesScreenState extends State<CryptoRatesScreen> {
                                                           const EdgeInsets.only(
                                                               right: 15.0),
                                                       child: Text(
-                                                        "${apiData[index]["price_usd"]} \$"
+                                                        "\$ ${apiData[index]["current_price"]}"
                                                             .substring(0, 5),
                                                         style: TextStyle(
                                                             color: MainColors
@@ -134,20 +134,18 @@ class _CryptoRatesScreenState extends State<CryptoRatesScreen> {
                                           ),
                                         ],
                                       );
-                                    } else {
-                                      return const Spacer();
-                                    }
-                                  }),
-                            ),
-                          ],
+                                    }),
+                              ),
+                            ],
+                          ),
                         )
                       : SizedBox(
-                        height: size.height,
-                        width: size.width,
-                        child: Center(
-                            child: CircularProgressIndicator(
-                                color: MainColors.backgroundColors)),
-                      ),
+                          height: size.height,
+                          width: size.width,
+                          child: Center(
+                              child: CircularProgressIndicator(
+                                  color: MainColors.backgroundColors)),
+                        ),
                 ],
               ),
             ),

@@ -50,6 +50,7 @@ flutter:
   assets:
     - assets/icons/
     - assets/gifs/
+    - assets/imgs/
 
   fonts:
     - family: myanamarText

@@ -7,20 +7,20 @@ import 'package:flutter/material.dart';
 import 'package:water_drop_nav_bar/water_drop_nav_bar.dart';
 
 class NavigationScreen extends StatefulWidget {
-  const NavigationScreen({super.key});
+  final int num;
+  const NavigationScreen({super.key, required this.num});
 
   @override
   State<NavigationScreen> createState() => _NavigationScreenState();
 }
 
 class _NavigationScreenState extends State<NavigationScreen> {
-  int currentIndex = 0;
-  late PageController pageController;
+  late int currentIndex;
 
   @override
   void initState() {
     super.initState();
-    pageController = PageController(initialPage: currentIndex);
+    currentIndex = widget.num;
   }
 
   @override

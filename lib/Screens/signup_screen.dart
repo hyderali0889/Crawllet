@@ -11,6 +11,7 @@ import '../Theme/font_sizes.dart';
 import '../Theme/main_colors.dart';
 import '../Theme/spacing.dart';
 import '../Controllers/signup_screen_controller.dart';
+import 'navigation_screen.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({Key? key}) : super(key: key);
@@ -228,8 +229,8 @@ Widget signUpScreenWidget(context) {
                                     );
                                     if (FirebaseAuth
                                         .instance.currentUser!.uid.isNotEmpty) {
-                                      Get.offAllNamed(
-                                          AppRoutes.navigationScreen);
+                                     Get.offAll(
+                                          const NavigationScreen(num: 0) );
                                     }
                                   } else {
                                     Get.find<SignupScreenController>()

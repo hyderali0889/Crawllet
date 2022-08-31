@@ -18,18 +18,22 @@ class _LoginScreenComponentState extends State<LoginScreenComponent> {
     MediaQueryData data = MediaQuery.of(context);
     return Scaffold(
       backgroundColor: MainColors.backgroundColors,
-      body: SizedBox(
-        width: data.size.width,
-        height: data.size.height,
-        child: Stack(children: [
-          CustomPaint(
-            size: const Size(900, 500),
-            painter: RPSCustomPainter(),
+      body: Column(
+        children: [
+          SizedBox(
+            width: data.size.width,
+            height: data.size.height,
+            child: Stack(children: [
+              CustomPaint(
+                size: const Size(900, 500),
+                painter: RPSCustomPainter(),
+              ),
+              Padding(
+                  padding: EdgeInsets.only(top: data.viewPadding.top),
+                  child: widget.mainwidget)
+            ]),
           ),
-          Padding(
-              padding: EdgeInsets.only(top: data.viewPadding.top),
-              child: widget.mainwidget)
-        ]),
+        ],
       ),
     );
   }
