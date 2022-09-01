@@ -8,6 +8,7 @@ import 'package:crawllet/utils/api_call.dart';
 import 'package:crawllet/utils/firebase_functions.dart';
 import 'package:custom_bottom_sheet/custom_bottom_sheet.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:simple_month_year_picker/simple_month_year_picker.dart';
 
@@ -29,6 +30,15 @@ class _HomeScreenState extends State<HomeScreen> {
   TextEditingController cardVCS = TextEditingController();
   dynamic apiData;
   dynamic userData;
+  @override
+  void dispose() {
+    super.dispose();
+    cardName.dispose();
+    cardNum.dispose();
+    cardCompany.dispose();
+    cardVCS.dispose();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -193,7 +203,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             Padding(
                               padding: const EdgeInsets.only(top: 15.0),
                               child: Text(
-                                "\$ ${apiData[0]["current_price"]}".substring(0, 5),
+                                "\$ ${apiData[0]["current_price"]}"
+                                    .substring(0, 5),
                                 style: TextStyle(
                                     fontSize: FontSizes.xl,
                                     fontFamily: "Harlow",
@@ -220,9 +231,13 @@ class _HomeScreenState extends State<HomeScreen> {
       TextInputType val, int maxlines) {
     return Padding(
       padding: const EdgeInsets.only(top: 25.0),
-      child: TextField(
+      child: TextFormField(
+        inputFormatters: [
+          LengthLimitingTextInputFormatter(maxlines),
+
+        ],
         controller: control,
-        maxLines: maxlines,
+
         keyboardType: val,
         style: TextStyle(
             fontFamily: "rockwell",
@@ -244,7 +259,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-
   showBottomSheet(context, controller) {
     SlideDialog.showSlideDialog(
       context: context,
@@ -254,7 +268,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Padding(
         padding: const EdgeInsets.only(top: 0.0),
         child: SizedBox(
-          height: 450,
+          height: MediaQuery.of(context).size.height * 0.6,
           child: ListView(children: [
             Column(
               children: [
@@ -270,52 +284,57 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 SizedBox(
-                    width: 300,
+                    width: MediaQuery.of(context).size.width * 0.9,
                     height: 80,
                     child: textField(cardName, "Enter Card Holder's Name",
                         TextInputType.name, 64)),
                 SizedBox(
-                    width: 300,
+                    width: MediaQuery.of(context).size.width * 0.9,
                     height: 80,
                     child: textField(cardNum, "Enter Card Number",
                         TextInputType.number, 14)),
                 SizedBox(
-                    width: 300,
+                    width: MediaQuery.of(context).size.width * 0.9,
                     height: 80,
                     child: textField(cardCompany, "Enter Card Company",
                         TextInputType.name, 64)),
                 Row(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.only(top: 15.0),
-                      child: TextButton(
-                          onPressed: () async {
-                            await SimpleMonthYearPicker
-                                .showMonthYearPickerDialog(
-                              titleFontFamily: "Harlow",
-                              context: context,
-                            ).then((value) {
-                              controller.addDate(value);
-                            });
-                          },
-                          child: Container(
-                            height: 60,
-                            width: 150,
-                            decoration: BoxDecoration(
-                                color: MainColors.foregroundColor,
-                                borderRadius: BorderRadius.circular(14)),
-                            child: Center(
-                                child: Text(
-                              "Choose Exp Date",
-                              style: TextStyle(color: MainColors.headingColor),
+                      padding: const EdgeInsets.only(top: 15.0, left: 10.0),
+                      child: SizedBox(
+                        height: 60,
+                        width: MediaQuery.of(context).size.width * 0.5,
+                        child: TextButton(
+                            onPressed: () async {
+                              await SimpleMonthYearPicker
+                                  .showMonthYearPickerDialog(
+                                titleFontFamily: "Harlow",
+                                context: context,
+                              ).then((value) {
+                                controller.addDate(value);
+                              });
+                            },
+                            child: Container(
+                              height: 60,
+                              width: MediaQuery.of(context).size.width * 0.55,
+                              decoration: BoxDecoration(
+                                  color: MainColors.foregroundColor,
+                                  borderRadius: BorderRadius.circular(14)),
+                              child: Center(
+                                  child: Text(
+                                "Choose Exp Date",
+                                style:
+                                    TextStyle(color: MainColors.headingColor),
+                              )),
                             )),
-                          )),
+                      ),
                     ),
                     SizedBox(
                         width: 180,
                         height: 80,
                         child: textField(
-                            cardVCS, "Card's CVC", TextInputType.name, 64)),
+                            cardVCS, "Card's CVC", TextInputType.name, 3)),
                   ],
                 ),
                 Obx(
@@ -332,7 +351,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             if (cardName.text.isNotEmpty &&
                                 cardCompany.text.isNotEmpty &&
                                 controller.date.value != null &&
-                                cardVCS.text.isNotEmpty &&
+                                cardVCS.text.isNotEmpty  &&
                                 cardNum.text.isNotEmpty) {
                               controller.changeisloading(true);
                               await FirebaseFunctions().addDatatoFirestore(
@@ -346,13 +365,13 @@ class _HomeScreenState extends State<HomeScreen> {
                               controller.changeisloading(false);
                               Get.snackbar("Uploaded", "Upload Complete");
                               Get.offAll(const NavigationScreen(num: 0));
-                            }
-                            else {
-                              Get.snackbar("Error", "All Fields Are Required");
+                            } else {
+                              Get.snackbar("Error",
+                                  "All Fields Are Required, Please Double check all your credentials");
                             }
                           } catch (e) {
                             Get.snackbar(
-                                "Error Occurred", " Please Try Again $e ");
+                                "Error Occurred", " Please Try Again  ");
                             controller.changeisloading(false);
                           }
                         },

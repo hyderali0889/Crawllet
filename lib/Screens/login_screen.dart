@@ -21,26 +21,27 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+    TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
+
   @override
   void initState() {
     super.initState();
     Get.lazyPut(() => LoginScreenController());
   }
 
-
+@override
+  void dispose() {
+     super.dispose();
+     emailController.dispose();
+     passwordController.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return LoginScreenComponent(mainwidget: loginScreenWidget(context));
-  }
-}
-
-Widget loginScreenWidget(context) {
-
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
-  Size size = MediaQuery.of(context).size;
-  return Column(
+      Size size = MediaQuery.of(context).size;
+    return LoginScreenComponent(mainwidget: Column(
     children: [
       SizedBox(
         width: size.width,
@@ -290,5 +291,7 @@ Widget loginScreenWidget(context) {
         ),
       ),
     ],
-  );
+  ));
+  }
 }
+

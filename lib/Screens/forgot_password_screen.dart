@@ -21,7 +21,7 @@ class ForgotPasswordScreen extends StatefulWidget {
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
-    Get.lazyPut( () => ForgotScreenController());
+    Get.lazyPut(() => ForgotScreenController());
 
     return LoginScreenComponent(mainwidget: signUpScreenWidget(context));
   }
@@ -131,7 +131,7 @@ Widget signUpScreenWidget(
                       padding: EdgeInsets.only(top: Spacing.md),
                       child: Center(
                         child: Obx(
-                         () => TextButton(
+                          () => TextButton(
                               onPressed: () async {
                                 try {
                                   if (emailController.text.isNotEmpty) {
@@ -141,18 +141,20 @@ Widget signUpScreenWidget(
                                         emailController.text.trim());
                                     Get.offNamed(AppRoutes.loginScreen);
                                   } else {
-                                     Get.find<ForgotScreenController>()
+                                    Get.find<ForgotScreenController>()
                                         .changeIsLoadingStarted(false);
                                     Get.snackbar(
-                                        "Error Ocurred", " Empty Fields ",
-                                        snackPosition: SnackPosition.BOTTOM);
+                                      "Error Ocurred",
+                                      " Empty Fields ",
+                                    );
                                   }
                                 } catch (e) {
-                                   Get.find<ForgotScreenController>()
-                                        .changeIsLoadingStarted(false);
-                                  Get.snackbar("Error Ocurred",
-                                      "Please Check Your Connection ",
-                                      snackPosition: SnackPosition.BOTTOM);
+                                  Get.find<ForgotScreenController>()
+                                      .changeIsLoadingStarted(false);
+                                  Get.snackbar(
+                                    "Error Ocurred",
+                                    "Please Check Your Connection ",
+                                  );
                                 }
                               },
                               child: Container(
@@ -169,7 +171,8 @@ Widget signUpScreenWidget(
                                       child: Get.find<ForgotScreenController>()
                                               .isLoadingStarted
                                               .value
-                                          ? Image.asset("assets/gifs/loading.gif")
+                                          ? Image.asset(
+                                              "assets/gifs/loading.gif")
                                           : Text(
                                               "Send Link",
                                               style: TextStyle(
